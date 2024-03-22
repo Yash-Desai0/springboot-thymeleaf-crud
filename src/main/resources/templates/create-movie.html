@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://thymeleaf.org">
+
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Add Movie</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+
+<body>
+
+<header>
+    <a onclick="history.go(-1)"><button>Back to Menu</button></a>
+</header>
+
+<div class="container">
+    <h2 >Add Movies</h2>
+
+    <form th:action="@{/movie/save}" th:object="${movie}" method="post">
+
+        <div class="form-group">
+            <label for="name">Movie Title</label>
+            <input type="text" id="name" th:field="*{title}" required>
+            <span th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+        </div>
+
+        <div class="form-group">
+            <label for="dob">Movie ReleaseDate</label>
+            <input type="date" id="dob" th:field="*{releaseDate}" required>
+            <span th:if="${#fields.hasErrors('releaseDate')}" th:errors="*{releaseDate}"></span></div>
+
+        <div class="form-group" th:each="actor : ${actors}">
+            <label for="actors">Movie Actors</label>
+            <input type="checkbox" id="actors" th:field="*{actors}" th:value="${actor.id}" th:text="${actor.firstName}+' '+${actor.lastName}"/><br>
+        </div>
+
+        <div class="form-group">
+            <label for="gen">Genre:</label>
+            <select id="gen" th:field="*{genre}" required>
+                <option value="">Select Genre</option>
+                <option th:value="Thriller">Thriller</option>
+                <option th:value="Action">Action</option>
+                <option th:value="Romantic">Romantic</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <button type="submit" class="btn">Submit</button>
+        </div>
+
+        <div class="form-group">
+            <span style="color: red;" th:text="${error}"></span>
+        </div>
+
+    </form>
+</div>
+</body>
+</html>
