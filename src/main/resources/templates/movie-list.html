@@ -1,55 +1,301 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://thymeleaf.org">
-
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="ISO-8859-1">
-    <title>Movies<</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <title>Movie List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+        label.error {
+            font-size:15px;
+            color: red;
+            padding: 2px 8px;
+            margin-top: 2px;
+	 }
+    </style>
 </head>
-
 <body>
+<section class="middle search">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="card">
+                <div class="card-header">Movie List</div>
+                <div class="card-body">
+                    <div th:switch="${movies}" class="container my-5">
+                        <div class="row">
+                            <div class="col">
+                                <!-- Button trigger modal -->
+                                <!--<a th:href="@{/Movie}" class="btn btn-primary btn-sm mb-3"> Add Movie </a>-->
+                                <button class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#myModal">Add Movie</button>
+                            </div>
+                            <div class="col">
+                                <a th:href="@{/actors}"><button class="btn btn-primary btn-block mb-3">Show Actors</button></a>
+                            </div>
+                        </div>
 
-<header>
-    <a href="actors"><button>Home</button></a>
-    <a href="movie/new"><button>Add Movie</button></a>
-    <a href="actor/new"><button>Add Actor</button></a>
-    <a href="actors"><button>Actor List</button></a>
-</header>
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <thead>
+                                <tr>
+                                    <th>Movie ID</th>
+                                    <th>Movie Title</th>
+                                    <th>Release Date</th>
+                                    <th>Genre</th>
+                                    <th>Actors</th>
+                                    <th>Actions</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <h2 th:case="null">No Movies yet!</h2>
+                                    <div th:case="*">
+                                        <!-- Additional rows can be added dynamically -->
+                                        <tr th:each="Movie : ${Movies}">
+                                            <td th:text="${Movie.id}"></td>
+                                            <td th:text="${Movie.title}"></td>
+                                            <td th:text="${Movie.releaseDate}"></td>
+                                            <td th:text="${Movie.genre}"></td>
+                                            <td>
+                                                <a th:href="@{/Movie/edit/{id}(id=${Movie.id})}">Edit</a>
+                                                <a th:href="@{/Movie/delete/{id}(id=${Movie.id})}" onclick="return confirm('Are you sure you want to delete this Movie?')">Delete</a>
+                                            </td>
+                                        </tr>
+                                    </div>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-<div class="container">
-    <h2>Movies</h2>
+<!-- Modal -->
+<div class="modal fade" id="myModal" data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
 
-    <table>
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Release Date</th>
-            <th>Genre</th>
-            <th>Actors</th>
-            <th>Actions</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="movie : ${movies}">
-            <td th:text="${movie.id}"></td>
-            <td th:text="${movie.title}"></td>
-            <td th:text="${movie.releaseDate}"></td>
-            <td th:text="${movie.genre}"></td>
-            <td>
-                <th:block th:each="actor : ${movie.actors}">
-                    <p th:text="${actor.userName}"></p>
-                </th:block>
-            </td>
-            <td>
-                <!--<a th:href="@{/movies/{id}(id=${movie.id})}">View</a>-->
-                <a th:href="@{/movie/edit/{id}(id=${movie.id})}">Edit</a>
-                <a th:href="@{/movie/delete/{id}(id=${movie.id})}" onclick="return confirm('Are you sure you want to delete this Movie?')">Delete</a>
-            </td>
-        </tr>
-        </tbody>
-    </table>
+            <!-- Modal header -->
+            <div class="modal-header">
+                <h4 class="modal-title">Add Movie</h4>
+                <span style="color:red" th:text="${error}"></span>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body">
+
+                <form th:action="@{/movie/save}" id="registrationForm" th:object="${movie}" method="post" autocomplete="off">
+                     <div class="form-group">
+                        <label class="control-label" for="title">Movie Title</label>
+                        <input type="text" class="form-control" id="title" th:field="*{title}" placeholder="Enter title">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label" for=" releaseDate">Movie ReleaseDate</label>
+                        <input type="date" class="form-control" id=" releaseDate" th:field="*{releaseDate}" autocomplete="off">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="control-label" for="gen">Genre:</label>
+                        <select id="gen" th:field="*{Genre}" class="form-select" aria-label="Default select example">
+                            <option value="">Open this select menu</option>
+                            <option th:value="Thriller">Thriller</option>
+                            <option th:value="Action">Action</option>
+                            <option th:value="Romantic">Romantic</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label></label>lass="control-label">Actors</label>
+                        <select data-placeholder="Choose a country..." style="width:350px;" multiple class="chzn-select"/>
+                        <!--<label>
+                            <select class="chzn-select">
+                                <option value=""></option>
+                                <option value="United States">United States</option>
+                                <option value="United Kingdom">United Kingdom</option>
+                                <option value="Afghanistan">Afghanistan</option>
+                                <option value="Aland Islands">Aland Islands</option>
+                                <option value="Albania">Albania</option>
+                                <option value="Algeria">Algeria</option>
+                                ... more options here
+                            </select>
+                        </label>-->
+                    </div>
+
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/additional-methods.js"></script>
+<!--For choose Select opetions-->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chosen-js@1.8.2/chosen.css" />
+<!--<script src="jquery.min.js"></script>-->
+<script src="https://cdn.jsdelivr.net/npm/chosen-js@1.8.2/chosen.jquery.js"></script>
+
+<script>
+    $.validator.addMethod("minAge", function(value, element, min) {
+    var today = new Date();
+    var birthDate = new Date(value);
+    var age = today.getFullYear() - birthDate.getFullYear();
+
+    if (age > min+1) {
+        return true;
+    }
+
+    var m = today.getMonth() - birthDate.getMonth();
+
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    return age >= min;
+    },);
+
+    $.validator.addMethod(
+    "regex",
+    function(value, element, regexp) {
+        var check = false;
+        var re = new RegExp(regexp);
+        return this.optional(element) || re.test(value);
+    },
+    "Special char not allowed!"
+    );
+
+$(document).ready(function() {
+$("#registrationForm").validate({
+    rules: {
+        'title': {
+        required: true,
+        minlength: 6,
+        maxlength: 20,
+        regex: "^[a-zA-Z0-9\s ]+$"
+        },
+
+        gender:{
+           required: true
+        },
+
+        ' releaseDate': {
+        minAge: 18
+        },
+
+        'phoneNumber': {
+         required: true,
+         minlength: 10,
+         maxlength: 10
+        },
+
+        'biography': {
+        maxlength: 50
+        }
+    },
+
+    messages: {
+        title: {
+        required: "Fill title!",
+        maxlength: "title contains 20 characters!",
+        minlength: "Minimum 6 characters required!"
+        },
+
+        gender: {
+        required: "Select your gender!"
+        },
+
+         releaseDate: {
+        minAge: "age should be 18!"
+        },
+
+        biography: {
+        maxlength: "Only 50 chars allowed!"
+        },
+
+        phoneNumber: {
+        required: "Fill Phone Field",
+        maxlength: "Only 10 allowed!"
+        }
+    },
+
+    highlight: function (element) {
+        $(element).closest('.control-group').removeClass('success').addClass('error');
+    },
+
+    submitHandler: function(form) {
+		form.submit();
+	}
+
+});
+});
+
+$(".chzn-select").chosen({no_results_text: "No results matched"});
+$(".chzn-select").chosen({max_selected_options: 5});
+
+
+ $(".chzn-select").chosen({
+
+  // allows deselect on single selects
+  allow_single_deselect: false,
+
+  // hides the search box if there are n or fewer items
+  disable_search_threshold: 0,
+
+  // enables/disables the search box
+  disable_search: false,
+
+  // search options
+  enable_split_word_search: true,
+  group_search: true,
+  search_contains: false,
+  case_sensitive_search: false,
+  hide_results_on_select: true,
+
+  // allows to delete selected items with backstroke
+  single_backstroke_delete: true,
+
+  // the maximum number of items allowed to be selected
+  max_selected_options: Infinity,
+  inherit_select_classes: false,
+
+  // displays selected items
+  display_selected_options: true,
+
+  // displays disababled items
+  display_disabled_options: true,
+
+  // includes group labels in the selected items
+  include_group_label_in_selected: false,
+
+  // the maximum number of results to display
+  max_shown_results: Infinity,
+
+  // enables/disables RTL
+  RTL: false,
+
+  // select width
+  width: 100%
+
+});
+</script>
 </body>
 </html>

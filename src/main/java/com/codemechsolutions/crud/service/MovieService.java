@@ -11,6 +11,6 @@ public interface MovieService {
     Movie saveMovie(Movie movie);
     Movie getMovieById(long id) throws ResourceNotFoundException;
     void deleteMovieById(long id) throws ResourceNotFoundException;
-    boolean getMovieByTitle(String title);
+    boolean getMovieByTitle(String title) ;
 
 }

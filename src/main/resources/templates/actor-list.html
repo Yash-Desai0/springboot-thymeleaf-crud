@@ -13,6 +13,12 @@
             height: 100vh;
             background-color: #f8f9fa;
         }
+        label.error {
+            font-size:15px;
+            color: red;
+            padding: 2px 8px;
+            margin-top: 2px;
+	 }
     </style>
 </head>
 <body>
@@ -26,16 +32,14 @@
                         <div class="row">
                             <div class="col">
                                 <!-- Button trigger modal -->
-                                <a th:href="@{/actor}" class="btn btn-primary btn-sm mb-3"> Add Actor </a>
-                                <!--<button class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#myModal">Add Actor</button>-->
+                                <!--<a th:href="@{/actor}" class="btn btn-primary btn-sm mb-3"> Add Actor </a>-->
+                                <button class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#myModal">Add Actor</button>
                             </div>
                             <div class="col">
-                                <a href="movies-table-view.html"><button class="btn btn-primary btn-block mb-3">Show Movies</button></a>
+                                <a th:href="@{/movies}"><button class="btn btn-primary btn-block mb-3">Show Movies</button></a>
                             </div>
                         </div>
 
-                        <h2 th:case="null">No Students yet!</h2>
-                        <div th:case="*">
                             <div class="table-responsive">
                                 <table class="table table-bordered">
                                     <thead>
@@ -50,6 +54,8 @@
                                     </tr>
                                     </thead>
                                     <tbody>
+                                    <h2 th:case="null">No Actors yet!</h2>
+                                    <div th:case="*">
                                     <tr th:each="actor : ${actors}">
                                         <td th:text="${actor.id}"></td>
                                         <td th:text="${actor.userName}"></td>
@@ -75,6 +81,11 @@
 </section>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
+<script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/additional-methods.js"></script>
 
 <!-- Modal -->
 <div class="modal fade" id="myModal" data-backdrop="static" data-keyboard="false">
@@ -83,63 +94,154 @@
 
             <!-- Modal header -->
             <div class="modal-header">
-                <h4 class="modal-title">Heading</h4>
+                <h4 class="modal-title">Add Actor</h4>
+                <span style="color:red" th:text="${error}"></span>
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
             <!-- Modal body -->
             <div class="modal-body">
 
-                <form id="registrationForm" class="needs-validation" novalidate>
+                <form th:action="@{/actor/save}" id="registrationForm" th:object="${actor}" method="post" autocomplete="off">
 
-                    <div class="form-group">
-                        <label class="control-label" for="userName">User Name</label>
-                        <input type="text" class="form-control" id="userName" name="userName" placeholder="Enter username" required>
-                        <div class="invalid-feedback">Please provide a valid username.</div>
-                    </div>
 
-                    <div class="form-group">
-                        <label class="control-label">Gender</label>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="gender" id="genderMale" value="male" required>
-                            <label class="form-check-label" for="genderMale">Male</label>
+                        <div class="form-group">
+                            <label class="control-label" for="userName">User Name</label>
+                            <input type="text" class="form-control" id="userName" th:field="*{userName}" placeholder="Enter username">
                         </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="radio" name="gender" id="genderFemale" value="female" required>
-                            <label class="form-check-label" for="genderFemale">Female</label>
+
+                        <div class="form-group">
+                            <label class="control-label">Gender</label>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" th:field="*{gender}" name="gender" value="Male" id="genderMale">
+                                <label class="form-check-label" for="genderMale">Male</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" th:field="*{gender}" name="gender" id="genderFemale" value="Female" >
+                                <label class="form-check-label" for="genderFemale">Female</label>
+                            </div>
+                            <div id="genderError" class="gender-error"></div>
                         </div>
-                        <div class="invalid-feedback d-block">Please select your gender.</div>
-                    </div>
 
-                    <div class="form-group">
-                        <label class="control-label" for="dateOfBirth">Date of Birth</label>
-                        <input type="date" class="form-control" id="dateOfBirth" name="dateOfBirth" autocomplete="off" required>
-                        <div class="invalid-feedback">Please provide your date of birth.</div>
-                    </div>
+                        <div class="form-group">
+                            <label class="control-label" for="dateOfBirth">Date of Birth</label>
+                            <input type="date" class="form-control" id="dateOfBirth" th:field="*{dateOfBirth}" autocomplete="off">
+                        </div>
 
-                    <div class="form-group">
-                        <label class="control-label" for="phoneNumber">Phone Number</label>
-                        <input type="tel" class="form-control" id="phoneNumber" name="phoneNumber" required>
-                        <div class="invalid-feedback">Please provide a valid phone number.</div>
-                    </div>
+                        <div class="form-group">
+                            <label class="control-label" for="phoneNumber">Phone Number</label>
+                            <input type="tel" class="form-control" id="phoneNumber" th:field="*{phoneNumber}">
+                        </div>
 
-                    <div class="form-group">
-                        <label class="control-label" for="description">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
-                    </div>
+                        <div class="form-group">
+                            <label class="control-label" for="biography">biography</label>
+                            <textarea class="form-control" id="biography" th:field="*{biography}" rows="3"></textarea>
+                        </div>
 
-                    <button type="submit" class="btn btn-primary">Submit</button>
+
+                    <!-- Modal footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
+                    </div>
                 </form>
             </div>
-
-            <!-- Modal footer -->
-            <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
-            </div>
-
         </div>
     </div>
 </div>
+<script>
+    $.validator.addMethod("minAge", function(value, element, min) {
+    var today = new Date();
+    var birthDate = new Date(value);
+    var age = today.getFullYear() - birthDate.getFullYear();
 
+    if (age > min+1) {
+        return true;
+    }
+
+    var m = today.getMonth() - birthDate.getMonth();
+
+    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+        age--;
+    }
+
+    return age >= min;
+    },);
+
+    $.validator.addMethod(
+    "regex",
+    function(value, element, regexp) {
+        var check = false;
+        var re = new RegExp(regexp);
+        return this.optional(element) || re.test(value);
+    },
+    "Special char not allowed!"
+    );
+
+$(document).ready(function() {
+$("#registrationForm").validate({
+    rules: {
+        'userName': {
+        required: true,
+        minlength: 6,
+        maxlength: 20,
+        regex: "^[a-zA-Z0-9\s ]+$"
+        },
+
+        gender:{
+           required: true
+        },
+
+        'dateOfBirth': {
+        minAge: 18
+        },
+
+        'phoneNumber': {
+         required: true,
+         minlength: 10,
+         maxlength: 10
+        },
+
+        'biography': {
+        maxlength: 50
+        }
+    },
+
+    messages: {
+        userName: {
+        required: "Fill Username!",
+        maxlength: "Username contains 20 characters!",
+        minlength: "Minimum 6 characters required!"
+        },
+
+        gender: {
+        required: "Select your gender!"
+        },
+
+        dateOfBirth: {
+        minAge: "age should be 18!"
+        },
+
+        biography: {
+        maxlength: "Only 50 chars allowed!"
+        },
+
+        phoneNumber: {
+        required: "Fill Phone Field",
+        maxlength: "Only 10 allowed!"
+        }
+    },
+
+    highlight: function (element) {
+        $(element).closest('.control-group').removeClass('success').addClass('error');
+    },
+
+    submitHandler: function(form) {
+		form.submit();
+	}
+
+});
+});
+</script>
 </body>
 </html>
