@@ -8,8 +8,5 @@ import java.util.List;
 public interface ActorRepository extends JpaRepository<Actor,Long> {
 
     List<Actor> findByMoviesId(Long movieId);
-
-    boolean findByUserName(String userName);
-
-    public boolean existsById(Long id);
+    boolean existsActorByUserName(String userName);
 }

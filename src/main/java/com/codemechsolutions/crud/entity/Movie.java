@@ -1,20 +1,16 @@
 package com.codemechsolutions.crud.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Data
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
-@Builder
 public class Movie {
 
     @Id
@@ -31,4 +27,21 @@ public class Movie {
                joinColumns = @JoinColumn(name = "movie_id",referencedColumnName = "id"),
                inverseJoinColumns = @JoinColumn(name = "actor_id",referencedColumnName = "id"))
     private List<Actor> actors = new ArrayList<>();
+
+    public Movie(String title, LocalDate releaseDate, String genre) {
+        this.title = title;
+        this.releaseDate = releaseDate;
+        this.genre = genre;
+    }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", releaseDate=" + releaseDate +
+                ", genre='" + genre + '\'' +
+                ", actors=" + actors +
+                '}';
+    }
 }

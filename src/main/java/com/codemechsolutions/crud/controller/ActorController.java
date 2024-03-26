@@ -1,7 +1,7 @@
+/*
 package com.codemechsolutions.crud.controller;
 
 import com.codemechsolutions.crud.constant.APIConstant;
-import com.codemechsolutions.crud.domain.ResultStatusResponse;
 import com.codemechsolutions.crud.entity.Actor;
 import com.codemechsolutions.crud.entity.Movie;
 import com.codemechsolutions.crud.exception.ResourceNotFoundException;
@@ -17,8 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
 
-/*@Controller
-*//*@RequestMapping(APIConstant.ACTOR_URL)*//*
+@Controller
+
+@RequestMapping(APIConstant.ACTOR_URL)
 public class ActorController {
 
     @Autowired
@@ -31,12 +32,13 @@ public class ActorController {
         return "actor-list";
     }
 
-    *//*@GetMapping("/actor")
+
+@GetMapping("/actor")
     public String getActorForm(Model model)
     {
         model.addAttribute("actor",new Actor());
         return "create-actor";
-    }*//*
+    }
 
     @PostMapping("/actor/save")
     public String saveActor(@ModelAttribute("actor") Actor actor, Model model)
@@ -44,11 +46,12 @@ public class ActorController {
         System.out.println(actor);
 
 
-        *//*if(actorService.getActorByUserName(actor.getUserName()))
+
+if(actorService.getActorByUserName(actor.getUserName()))
         {
             model.addAttribute("error","Actor "+actor.getUserName()+" already exists!");
             return "create-actor";
-        }*//*
+        }
 
         actorService.saveActor(actor);
 
@@ -84,40 +87,7 @@ public class ActorController {
 
         return "redirect:/actors";
     }
-}*/
-@RestController
-@RequestMapping(APIConstant.ACTOR_URL)
-public class ActorController {
-
-    private final ActorService actorService;
-
-    public ActorController(ActorService actorService) {
-        this.actorService = actorService;
-    }
-
-    @PostMapping
-    public ResponseEntity<ResultStatusResponse> saveActor(@Valid @RequestBody Actor actor) {
-        return actorService.saveActor(actor);
-    }
-
-    @GetMapping(APIConstant.ACTOR_ID)
-    public ResponseEntity<Actor> getActor(@PathVariable Long ActorId) throws ResourceNotFoundException{
-        return actorService.getActorById(ActorId);
-    }
-
-    @PutMapping(APIConstant.ACTOR_ID)
-    public ResponseEntity<ResultStatusResponse> updateActor(@PathVariable Long id,@Valid @RequestBody Actor actor) throws ResourceNotFoundException {
-        return actorService.updateActor(id,actor);
-    }
-
-    @DeleteMapping(APIConstant.ACTOR_ID)
-    public ResponseEntity<ResultStatusResponse> deleteActor(@PathVariable Long id) throws ResourceNotFoundException {
-        return actorService.deleteActorById(id);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Actor>> getAllActors() throws ResourceNotFoundException {
-        return actorService.getAllActors();
-    }
+}
 
 }
+*/

@@ -83,8 +83,7 @@ public class ActorServiceImpl implements ActorService {
 
     public ResponseEntity<ResultStatusResponse> updateActor(Long actorId,Actor actorDetails) throws  ResourceNotFoundException{
 
-        Actor actor = actorRepository.findById(actorId)
-                .orElseThrow(() -> new ResourceNotFoundException("Actor not found for this id :: " + actorId));
+        Actor actor = getById(actorId);
 
         actor.setDateOfBirth(actor.getDateOfBirth());
         actor.setGender(actor.getGender());
@@ -102,9 +101,10 @@ public class ActorServiceImpl implements ActorService {
     }
 
     @Override
-    public ResponseEntity<ResultStatusResponse> deleteActorById(Long actorId) {
+    public ResponseEntity<ResultStatusResponse> deleteActorById(Long actorId) throws ResourceNotFoundException {
         try
         {
+            getById(actorId);
             actorRepository.deleteById(actorId);
             return new ResponseEntity<>(generateSuccessMessage(),HttpStatus.OK);
         }

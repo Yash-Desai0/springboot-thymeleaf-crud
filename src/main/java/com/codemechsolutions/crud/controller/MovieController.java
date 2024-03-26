@@ -1,3 +1,4 @@
+/*
 package com.codemechsolutions.crud.controller;
 
 import com.codemechsolutions.crud.entity.Actor;
@@ -27,13 +28,15 @@ public class MovieController {
 
     @Autowired
     private ActorService actorService;
-    /*@GetMapping("/movie")
+    */
+/*@GetMapping("/movie")
     public String showMovieForm(Model model)
     {
         model.addAttribute("movie",new Movie());
         return "create-movie";
     }
-*/
+*//*
+
     @GetMapping("/movies")
     public String MovieTableView(Model model)
     {
@@ -45,16 +48,19 @@ public class MovieController {
     @PostMapping("/movie/save")
     public String saveMovie(@ModelAttribute("movie") Movie movie,Model model)
     {
-        /*if(movieService.getMovieByTitle(movie.getTitle()))
+        */
+/*if(movieService.getMovieByTitle(movie.getTitle()))
         {
             model.addAttribute("error",movie.getTitle()+" movie already added");
             return "create-movie";
-        }*/
+        }*//*
+
         movieService.saveMovie(movie);
         return "redirect:/movies";
     }
 
-   /* @GetMapping("/movie/edit/{id}")
+   */
+/* @GetMapping("/movie/edit/{id}")
     public String editActorById(@PathVariable Long id, Model model) throws ResourceNotFoundException {
         model.addAttribute("movie", movieService.getMovieById(id));
         List<Actor> cactors = actorService.getAllActorsByMovieId(id);
@@ -68,7 +74,8 @@ public class MovieController {
         model.addAttribute("uncheckedActors",actors);
         //model.addAttribute("checkedActors",cactors);
         return "editMovie";
-    }*/
+    }*//*
+
 
     @PostMapping("/movie/edit")
     public String updateUser(@ModelAttribute("movie") @Valid Movie movie,BindingResult result, Model model) {
@@ -89,3 +96,4 @@ public class MovieController {
         return "redirect:/movies";
     }
 }
+*/
