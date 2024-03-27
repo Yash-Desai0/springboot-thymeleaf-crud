@@ -3,8 +3,8 @@
 <head>
     <meta charset="ISO-8859-1">
     <title>Movie List</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
-          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" />
     <style>
         body {
             display: flex;
@@ -36,12 +36,12 @@
                                 <button class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#myModal">Add Movie</button>
                             </div>
                             <div class="col">
-                                <a th:href="@{/actors}"><button class="btn btn-primary btn-block mb-3">Show Actors</button></a>
+                                <a th:href="@{/}"><button class="btn btn-primary btn-block mb-3">Show Actors</button></a>
                             </div>
                         </div>
 
                         <div class="table-responsive">
-                            <table class="table table-bordered">
+                            <table id="userTable" class="table table-bordered">
                                 <thead>
                                 <tr>
                                     <th>Movie ID</th>
@@ -52,10 +52,11 @@
                                     <th>Actions</th>
                                 </tr>
                                 </thead>
-                                <tbody>
-                                    <h2 th:case="null">No Movies yet!</h2>
+                                <tbody id="movie-data">
+                                    <h2 id="movie-count"></h2>
+                                    <!--<h2 th:case="null">No Movies yet!</h2>
                                     <div th:case="*">
-                                        <!-- Additional rows can be added dynamically -->
+                                        &lt;!&ndash; Additional rows can be added dynamically &ndash;&gt;
                                         <tr th:each="Movie : ${Movies}">
                                             <td th:text="${Movie.id}"></td>
                                             <td th:text="${Movie.title}"></td>
@@ -66,7 +67,7 @@
                                                 <a th:href="@{/Movie/delete/{id}(id=${Movie.id})}" onclick="return confirm('Are you sure you want to delete this Movie?')">Delete</a>
                                             </td>
                                         </tr>
-                                    </div>
+                                    </div>-->
                                 </tbody>
                             </table>
                         </div>
@@ -92,49 +93,47 @@
             <!-- Modal body -->
             <div class="modal-body">
 
-                <form th:action="@{/movie/save}" id="registrationForm" th:object="${movie}" method="post" autocomplete="off">
+                <form id="movieForm" autocomplete="off">
+                    <input type="number" id="id" hidden="hidden" />
                      <div class="form-group">
                         <label class="control-label" for="title">Movie Title</label>
-                        <input type="text" class="form-control" id="title" th:field="*{title}" placeholder="Enter title">
+                        <input type="text" class="form-control" id="title" name="title" placeholder="Enter title">
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label" for=" releaseDate">Movie ReleaseDate</label>
-                        <input type="date" class="form-control" id=" releaseDate" th:field="*{releaseDate}" autocomplete="off">
+                        <label class="control-label" for="releaseDate">Movie ReleaseDate</label>
+                        <input type="date" class="form-control" id="releaseDate" name="releaseDate" autocomplete="off">
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label" for="gen">Genre:</label>
-                        <select id="gen" th:field="*{Genre}" class="form-select" aria-label="Default select example">
-                            <option value="">Open this select menu</option>
-                            <option th:value="Thriller">Thriller</option>
-                            <option th:value="Action">Action</option>
-                            <option th:value="Romantic">Romantic</option>
+                        <label class="control-label" for="genre">Genre:</label>
+                        <select class="form-control" id="genre" name="genre">
+                            <option value="">Select Genre</option>
+                            <option value="action">Action</option>
+                            <option value="comedy">Comedy</option>
+                            <option value="drama">Drama</option>
+                            <option value="horror">Horror</option>
+                            <!-- Add more genres as needed -->
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label></label>lass="control-label">Actors</label>
-                        <select data-placeholder="Choose a country..." style="width:350px;" multiple class="chzn-select"/>
-                        <!--<label>
-                            <select class="chzn-select">
-                                <option value=""></option>
-                                <option value="United States">United States</option>
-                                <option value="United Kingdom">United Kingdom</option>
-                                <option value="Afghanistan">Afghanistan</option>
-                                <option value="Aland Islands">Aland Islands</option>
-                                <option value="Albania">Albania</option>
-                                <option value="Algeria">Algeria</option>
-                                ... more options here
-                            </select>
-                        </label>-->
+                        <label class="control-label" for="actors">Actors</label>
+                        <select data-placeholder="Choose Actors" multiple="true" class="form-control chosen-select" id="actors" name="actors">
+                            <option value=""></option>
+                            <option value="actor1">Actor 1</option>
+                            <option value="actor2">Actor 2</option>
+                            <option value="actor3">Actor 3</option>
+                            <option value="actor4">Actor 4</option>
+                            <!-- Add more actors as needed -->
+                        </select>
+                        <span id="actors-error" class="invalid-feedback"></span>
                     </div>
-
 
                     <!-- Modal footer -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <button type="submit" onclick="addMovieHandler(event)" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
             </div>
@@ -150,152 +149,154 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/additional-methods.js"></script>
 <!--For choose Select opetions-->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chosen-js@1.8.2/chosen.css" />
-<!--<script src="jquery.min.js"></script>-->
-<script src="https://cdn.jsdelivr.net/npm/chosen-js@1.8.2/chosen.jquery.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
 
+<script th:src="@{/js/mapping.js}">
 <script>
-    $.validator.addMethod("minAge", function(value, element, min) {
-    var today = new Date();
-    var birthDate = new Date(value);
-    var age = today.getFullYear() - birthDate.getFullYear();
+    $(".chosen-select").chosen({ max_selected_options: 3 });
 
-    if (age > min+1) {
-        return true;
+    var movies;
+    $.ajax({
+           method: 'GET',
+           url: '/api/v1/movies',
+           success: function (response) {
+               movies = response.data;
+               console.log(response)
+               populateMoviesAtDom(response)
+           }
+       })
+
+   function populateMoviesAtDom(movies = []) {
+       const actorElementCountTag = document.getElementById("movie-count");
+       actorElementCountTag.innerHTML = movies ? 'Total Movies: ' + movies.length : "No Movies Yet!";
+
+       const actorElementDataDivTag = document.getElementById("movie-data")
+
+       movies.forEach(({genre, releaseDate, id, title, actors}) => {
+           actorElementDataDivTag.innerHTML+=`
+               <tr>
+                   <td >${id}</td>
+                   <td >${title}</td>
+                   <td >${releaseDate}</td>
+                   <td >${genre}</td>
+                   <td>
+                    <th> ${actors.length > 0 ? actors.map(actor => actor.userName).join(",") : "No Actors"}</th>
+                    </td>
+                   <td>
+                       <button data-toggle="modal" data-target="#myModal" onclick="editMovie(${id})">Edit</button>
+                       <button onclick="deleteMovieById(${id})">Delete</button>
+                   </td>
+               </tr>
+               `;
+       })
+   }
+
+   function addMovieHandler(event) {
+           event.preventDefault();
+           var IsValid = $("#movieForm").valid();
+
+           if(IsValid)
+           {
+               var ajaxResponse;
+               var movie = {
+                   id: document.getElementById("id").value,
+                   title: document.getElementById("title").value,
+                   genre: document.getElementById("genre").value,
+                   releaseDate: document.getElementById("releaseDate").value,
+                   actors: document.getElementById("actors").value,
+               };
+
+               if (movie.id === "") {
+                  $.ajax({
+                      async: false,
+                      type: "POST",
+                      contentType: "application/json",
+                      dataType: "json",
+                      url: "api/v1/movies",
+                      data: JSON.stringify(movie),
+                      success: (successResponse) => {
+                          ajaxResponse = successResponse;
+                          window.location.reload();
+                      },
+                      error: (errorResponse) => {
+                          console.log(errorResponse.responseText);
+                      },
+                  });
+              } else {
+                  $.ajax({
+                      async: false,
+                      type: "PUT",
+                      contentType: "application/json",
+                      dataType: "json",
+                      url: "/api/v1/movies/" + movie.id,
+                      data: JSON.stringify(movie),
+                      success: ({resultStatus}) => {
+
+                          console.log(resultStatus);
+                      },
+                      error: (errorResponse) => {
+                          console.log(errorResponse.responseText);
+                      },
+                  });
+              }
+           }
+       }
+
+    function removeMovieFromDom(id) {
+        const movieToRemove = document.getElementById("movie_id_" + id);
+        console.log(movieToRemove)
+        if (movieToRemove != null) {
+            movieToRemove.remove();
+        }
     }
 
-    var m = today.getMonth() - birthDate.getMonth();
-
-    if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
+    function editMovie(id) {
+        $.ajax
+            ({
+                async: false,
+                type: "GET",
+                contentType: "application/json",
+                dataType: "json",
+                url: "/api/v1/movies/" + id,
+                success: (successResponse) =>
+                {
+                    $('#id').val(successResponse.id);
+                    $('#title').val(successResponse.title);
+                    $('#genre').val(successResponse.genre);
+                    $('#releaseDate').val(successResponse.releaseDate);
+                    $('#actors').val(successResponse.actors);
+                    console.log("done");
+                },
+                error: (errorResponse) => {
+                    console.log("something bad happended!");
+                },
+            });
     }
 
-    return age >= min;
-    },);
+    function deleteMovieById(id) {
+        $.ajax(
+            {
+                async: false,
+                type: "DELETE",
+                contentType: "application/json",
+                dataType: "json",
+                url: "/api/v1/movies" + id,
+                success: ({resultStatus}) => {
+                    console.log(resultStatus)
+                    if (resultStatus.status === "SUCCESS") {
+                        removeMovieFromDom(id);
+                        alert("Movie deleted successfully")
+                    } else {
+                        alert(resultStatus.errorMessage);
+                    }
+                },
+                error: (errorResponse) => {
+                    alert("something bad happended!");
+                },
+            }
+        )
 
-    $.validator.addMethod(
-    "regex",
-    function(value, element, regexp) {
-        var check = false;
-        var re = new RegExp(regexp);
-        return this.optional(element) || re.test(value);
-    },
-    "Special char not allowed!"
-    );
-
-$(document).ready(function() {
-$("#registrationForm").validate({
-    rules: {
-        'title': {
-        required: true,
-        minlength: 6,
-        maxlength: 20,
-        regex: "^[a-zA-Z0-9\s ]+$"
-        },
-
-        gender:{
-           required: true
-        },
-
-        ' releaseDate': {
-        minAge: 18
-        },
-
-        'phoneNumber': {
-         required: true,
-         minlength: 10,
-         maxlength: 10
-        },
-
-        'biography': {
-        maxlength: 50
-        }
-    },
-
-    messages: {
-        title: {
-        required: "Fill title!",
-        maxlength: "title contains 20 characters!",
-        minlength: "Minimum 6 characters required!"
-        },
-
-        gender: {
-        required: "Select your gender!"
-        },
-
-         releaseDate: {
-        minAge: "age should be 18!"
-        },
-
-        biography: {
-        maxlength: "Only 50 chars allowed!"
-        },
-
-        phoneNumber: {
-        required: "Fill Phone Field",
-        maxlength: "Only 10 allowed!"
-        }
-    },
-
-    highlight: function (element) {
-        $(element).closest('.control-group').removeClass('success').addClass('error');
-    },
-
-    submitHandler: function(form) {
-		form.submit();
-	}
-
-});
-});
-
-$(".chzn-select").chosen({no_results_text: "No results matched"});
-$(".chzn-select").chosen({max_selected_options: 5});
-
-
- $(".chzn-select").chosen({
-
-  // allows deselect on single selects
-  allow_single_deselect: false,
-
-  // hides the search box if there are n or fewer items
-  disable_search_threshold: 0,
-
-  // enables/disables the search box
-  disable_search: false,
-
-  // search options
-  enable_split_word_search: true,
-  group_search: true,
-  search_contains: false,
-  case_sensitive_search: false,
-  hide_results_on_select: true,
-
-  // allows to delete selected items with backstroke
-  single_backstroke_delete: true,
-
-  // the maximum number of items allowed to be selected
-  max_selected_options: Infinity,
-  inherit_select_classes: false,
-
-  // displays selected items
-  display_selected_options: true,
-
-  // displays disababled items
-  display_disabled_options: true,
-
-  // includes group labels in the selected items
-  include_group_label_in_selected: false,
-
-  // the maximum number of results to display
-  max_shown_results: Infinity,
-
-  // enables/disables RTL
-  RTL: false,
-
-  // select width
-  width: 100%
-
-});
+    }
 </script>
 </body>
 </html>

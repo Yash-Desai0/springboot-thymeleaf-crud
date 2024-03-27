@@ -85,8 +85,8 @@ public class ActorServiceImpl implements ActorService {
 
         Actor actor = getById(actorId);
 
-        actor.setDateOfBirth(actor.getDateOfBirth());
-        actor.setGender(actor.getGender());
+        actor.setDateOfBirth(actorDetails.getDateOfBirth());
+        actor.setGender(actorDetails.getGender());
         actor.setPhoneNumber(actorDetails.getPhoneNumber());
         actor.setBiography(actorDetails.getBiography());
         try{

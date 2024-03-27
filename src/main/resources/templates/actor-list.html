@@ -32,7 +32,6 @@
                         <div class="row">
                             <div class="col">
                                 <!-- Button trigger modal -->
-                                <!--<a th:href="@{/actor}" class="btn btn-primary btn-sm mb-3"> Add Actor </a>-->
                                 <button class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#myModal">Add Actor</button>
                             </div>
                             <div class="col">
@@ -188,8 +187,8 @@
                        <td >${phoneNumber}</td>
                        <td >${biography}</td>
                        <td>
-                           <button onclick="opensuccessResponseForm(${id})">Edit</button>
-                           <button onclick="deleteMovieById(${id})">Delete</button>
+                           <button data-toggle="modal" data-target="#myModal" onclick="openSuccessResponseForm(${id})">Edit</button>
+                           <button onclick="deleteActorById(${id})">Delete</button>
                        </td>
                    </tr>
                    `;
@@ -235,28 +234,21 @@
                       type: "PUT",
                       contentType: "application/json",
                       dataType: "json",
-                      url: "/actors/" + actor.id,
+                      url: "/api/v1/actors/" + actor.id,
                       data: JSON.stringify(actor),
-                      success: (successResponse) => {
-                          ajaxResponse = successResponse;
+                      success: ({resultStatus}) => {
+
+                          console.log(resultStatus);
                       },
                       error: (errorResponse) => {
                           console.log(errorResponse.responseText);
                       },
                   });
               }
-
-               if (ajaxResponse.status === "failed") {
-                    console.log(ajaxResponse.message);
-               }
-               if (ajaxResponse.status === "success") {
-                   console.log(ajaxResponse.message);
-                   window.location.href = "/";
-               }
            }
        }
 
-        function opensuccessResponseForm(id)
+        function openSuccessResponseForm(id)
         {
             $.ajax
             ({
@@ -267,31 +259,15 @@
                 url: "/api/v1/actors/" + id,
                 success: (successResponse) =>
                 {
-                    console.log(successResponse);
-                    console.log(successResponse.id);
-                    console.log(successResponse.userName);
-                    console.log(successResponse.gender);
-                    console.log(successResponse.dateOfBirth);
-                    console.log(successResponse.phoneNumber);
-                    console.log(successResponse.biography);
-                    console.log("done");
-                    <!--var myModal = document.getElementById('myModal');-->
 
-                         <!--document.getElementById("id").value = successResponse.id;-->
-
+                        $('#id').val(successResponse.id);
                         $('#userName').val(successResponse.userName);
                         $('#gender').val(successResponse.gender);
                         $('#dateOfBirth').val(successResponse.dateOfBirth);
                         $('#phoneNumber').val(successResponse.phoneNumber);
                         $('#biography').val(successResponse.biography);
-                        <!--myModal.show();-->
-                        <!--document.getElementById(#myModel).hidden = false;-->
-                        $('#myModal').show();
 
-
-                    if (successResponse.status === "failed") {
-                        console.log(successResponse.message);
-                    }
+                    console.log("ej");
                 },
                 error: (errorResponse) => {
                     console.log("something bad happended!");
@@ -299,7 +275,7 @@
             });
         }
 
-    function deleteMovieById(id) {
+    function deleteActorById(id) {
         $.ajax({
                 async: false,
                 type: "DELETE",
@@ -309,8 +285,8 @@
                 success: ({resultStatus}) => {
                     console.log(resultStatus)
                     if (resultStatus.status === "SUCCESS") {
-                        removeMovieFromDom(id);
-                        alert("Movie deleted successfully")
+                        removeActorFromDom(id);
+                        alert("Actor deleted successfully")
                         window.location.reload();
                     } else {
                         alert(resultStatus.errorMessage);
@@ -322,15 +298,13 @@
         })
     }
 
-    function removeMovieFromDom(id) {
-        const movieToRemove = document.getElementById("movie_id_" + id);
-        console.log(movieToRemove)
-        if (movieToRemove != null) {
-            movieToRemove.remove();
+    function removeActorFromDom(id) {
+        const actorToRemove = document.getElementById("actor_id_" + id);
+        console.log(actorToRemove)
+        if (actorToRemove != null) {
+            actorToRemove.remove();
         }
     }
-
-
 </script>
 </body>
 </html>
