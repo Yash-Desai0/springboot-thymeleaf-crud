@@ -119,12 +119,14 @@
 
                     <div class="form-group">
                         <label class="control-label" for="actors">Actors</label>
-                        <select data-placeholder="Choose Actors" multiple="true" class="form-control chosen-select" id="actors" name="actors">
-                            <option value=""></option>
+                        <select class="form-control chosen-select" id="actors" name="actors" multiple>
+                            <!-- Options will be populated dynamically via JavaScript -->
+
+                            <!--<option value=""></option>
                             <option value="actor1">Actor 1</option>
                             <option value="actor2">Actor 2</option>
                             <option value="actor3">Actor 3</option>
-                            <option value="actor4">Actor 4</option>
+                            <option value="actor4">Actor 4</option>-->
                             <!-- Add more actors as needed -->
                         </select>
                         <span id="actors-error" class="invalid-feedback"></span>
@@ -148,14 +150,30 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/additional-methods.js"></script>
+<script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <!--For choose Select opetions-->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
 
-<script th:src="@{/js/mapping.js}">
+<script th:src="@{/js/mapping.js}"></script>
+<script th:src="@{/js/ajax-call.js}"></script>
 <script>
-    $(".chosen-select").chosen({ max_selected_options: 3 });
+
+    fetchActorOptions();
+    // Function to fetch actor options from the database
+    function fetchActorOptions() {
+        $.get("/api/v1/actors", function (data) {
+            $("#actors").empty();
+            data.forEach(function (actor) {
+            console.log(actor.userName);
+                $("#actors_chosen").append(`<option value="${actor.id}">${actor.userName}</option>`);
+            });
+        });
+    }
+
+    $('#actors').chosen({ width: '200px' });
 
     var movies;
+
     $.ajax({
            method: 'GET',
            url: '/api/v1/movies',
@@ -164,13 +182,14 @@
                console.log(response)
                populateMoviesAtDom(response)
            }
-       })
+    })
 
    function populateMoviesAtDom(movies = []) {
+
        const actorElementCountTag = document.getElementById("movie-count");
        actorElementCountTag.innerHTML = movies ? 'Total Movies: ' + movies.length : "No Movies Yet!";
 
-       const actorElementDataDivTag = document.getElementById("movie-data")
+       const actorElementDataDivTag = document.getElementById("movie-data");
 
        movies.forEach(({genre, releaseDate, id, title, actors}) => {
            actorElementDataDivTag.innerHTML+=`
@@ -180,14 +199,13 @@
                    <td >${releaseDate}</td>
                    <td >${genre}</td>
                    <td>
-                    <th> ${actors.length > 0 ? actors.map(actor => actor.userName).join(",") : "No Actors"}</th>
+                     ${actors.length > 0 ? actors.map(actor => actor.userName).join(",") : "No Actors"}
                     </td>
                    <td>
                        <button data-toggle="modal" data-target="#myModal" onclick="editMovie(${id})">Edit</button>
                        <button onclick="deleteMovieById(${id})">Delete</button>
                    </td>
-               </tr>
-               `;
+               </tr>`;
        })
    }
 
@@ -197,13 +215,16 @@
 
            if(IsValid)
            {
+               var options = document.getElementById('actors').selectedOptions;
+
+               console.log(options);
                var ajaxResponse;
                var movie = {
                    id: document.getElementById("id").value,
                    title: document.getElementById("title").value,
                    genre: document.getElementById("genre").value,
                    releaseDate: document.getElementById("releaseDate").value,
-                   actors: document.getElementById("actors").value,
+                   'actors[]': $("#actors").val()
                };
 
                if (movie.id === "") {
@@ -280,7 +301,7 @@
                 type: "DELETE",
                 contentType: "application/json",
                 dataType: "json",
-                url: "/api/v1/movies" + id,
+                url: "/api/v1/movies/" + id,
                 success: ({resultStatus}) => {
                     console.log(resultStatus)
                     if (resultStatus.status === "SUCCESS") {
@@ -297,6 +318,7 @@
         )
 
     }
+
 </script>
 </body>
 </html>
