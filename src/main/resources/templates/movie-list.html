@@ -165,8 +165,9 @@
             $("#actors").empty();
             data.forEach(function (actor) {
             console.log(actor.userName);
-                $("#actors_chosen").append(`<option value="${actor.id}">${actor.userName}</option>`);
+                $("#actors").append(`<option value="${actor.id}">${actor.userName}</option>`);
             });
+            $("#actors").trigger('chosen:updated');
         });
     }
 
@@ -215,17 +216,23 @@
 
            if(IsValid)
            {
-               var options = document.getElementById('actors').selectedOptions;
-
-               console.log(options);
                var ajaxResponse;
                var movie = {
                    id: document.getElementById("id").value,
                    title: document.getElementById("title").value,
                    genre: document.getElementById("genre").value,
                    releaseDate: document.getElementById("releaseDate").value,
-                   'actors[]': $("#actors").val()
+                   actors: $('#actors').val(),
                };
+
+               console.log(movie.actors);
+
+<!--               getting errro here,2024-03-28T14:13:41.290+05:30  -->
+<!--               WARN 20757 -&#45;&#45; [springboot-thymeleaf-crud] [nio-8086-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot construct instance of `com.codemechsolutions.crud.entity.Actor` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('24')]-->
+
+
+
+
 
                if (movie.id === "") {
                   $.ajax({
