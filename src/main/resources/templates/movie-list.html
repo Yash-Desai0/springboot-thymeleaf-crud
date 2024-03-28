@@ -158,7 +158,10 @@
 <script th:src="@{/js/ajax-call.js}"></script>
 <script>
 
+    $('#actors').chosen({ width: '200px' });
+
     fetchActorOptions();
+
     // Function to fetch actor options from the database
     function fetchActorOptions() {
         $.get("/api/v1/actors", function (data) {
@@ -171,16 +174,14 @@
         });
     }
 
-    $('#actors').chosen({ width: '200px' });
-
-    var movies;
+    var movies;  // For take ajax response
 
     $.ajax({
            method: 'GET',
            url: '/api/v1/movies',
            success: function (response) {
                movies = response.data;
-               console.log(response)
+               console.log(response);
                populateMoviesAtDom(response)
            }
     })
@@ -225,12 +226,7 @@
                    actors: $('#actors').val(),
                };
 
-               console.log(movie.actors);
-
-<!--               getting errro here,2024-03-28T14:13:41.290+05:30  -->
-<!--               WARN 20757 -&#45;&#45; [springboot-thymeleaf-crud] [nio-8086-exec-1] .m.m.a.ExceptionHandlerExceptionResolver : Resolved [org.springframework.http.converter.HttpMessageNotReadableException: JSON parse error: Cannot construct instance of `com.codemechsolutions.crud.entity.Actor` (although at least one Creator exists): no String-argument constructor/factory method to deserialize from String value ('24')]-->
-
-
+               console.log(movie.actors);  // Print actors object that map with the movie
 
 
 
@@ -277,6 +273,40 @@
             movieToRemove.remove();
         }
     }
+
+<!--    function getActorById(id){-->
+<!--        $.ajax-->
+<!--            ({-->
+<!--                async: false,-->
+<!--                type: "GET",-->
+<!--                contentType: "application/json",-->
+<!--                dataType: "json",-->
+<!--                url: "/api/v1/actors/" + id,-->
+<!--                success: (successResponse) =>-->
+<!--                {-->
+<!--                        console.log(successResponse.gender);-->
+<!--                        document.getElementById("form-title").innerHTML = "Edit Actor";-->
+<!--                        $('#id').val(successResponse.id);-->
+<!--                        $('#userName').val(successResponse.userName);-->
+<!--                        if(successResponse.gender === "Male")-->
+<!--                        {-->
+<!--                            document.getElementById("genderMale").checked = true;-->
+<!--                        }-->
+<!--                        else-->
+<!--                        {-->
+<!--                            document.getElementById("genderFemale").checked = true;-->
+<!--                        }-->
+<!--                        $('#gender').val(successResponse.gender);-->
+<!--                        $('#dateOfBirth').val(successResponse.dateOfBirth);-->
+<!--                        $('#phoneNumber').val(successResponse.phoneNumber);-->
+<!--                        $('#biography').val(successResponse.biography);-->
+
+<!--                },-->
+<!--                error: (errorResponse) => {-->
+<!--                    console.log("something bad happended!");-->
+<!--                },-->
+<!--            });-->
+<!--    }-->
 
     function editMovie(id) {
         $.ajax

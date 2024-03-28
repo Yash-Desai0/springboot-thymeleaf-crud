@@ -4,6 +4,7 @@ import com.codemechsolutions.crud.constant.APIConstant;
 import com.codemechsolutions.crud.domain.ResultStatusResponse;
 import com.codemechsolutions.crud.entity.Movie;
 import com.codemechsolutions.crud.exception.ResourceNotFoundException;
+import com.codemechsolutions.crud.request.MovieRequest;
 import com.codemechsolutions.crud.service.MovieService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +21,12 @@ public class MovieRestController {
     private MovieService movieService;
 
     @PostMapping
-    public ResponseEntity<ResultStatusResponse> saveMovie(@Valid @RequestBody Movie movie) {
+    public ResponseEntity<ResultStatusResponse> saveMovie(@Valid @RequestBody MovieRequest movieRequest) {
+        Movie movie = new Movie();
+        movie.setTitle(movieRequest.getTitle());
+        movie.setReleaseDate(movieRequest.getReleaseDate());
+        movie.setGenre(movieRequest.getGenre());
+        movie.setActors(movie.getActors());
         return movieService.saveMovie(movie);
     }
 

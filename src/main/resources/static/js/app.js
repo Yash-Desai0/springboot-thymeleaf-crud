@@ -17,6 +17,17 @@
      },
  );
 
+  $.validator.addMethod("maxAge", function(value, element, max) {
+      var today = new Date();
+      var birthDate = new Date(value);
+      var age = today.getFullYear() - birthDate.getFullYear();
+
+      if (age < max+1) {
+          return true;
+      }
+
+      },);
+
  $.validator.addMethod(
      "regex",
      function(value, element, regexp) {
@@ -27,13 +38,21 @@
      "Special char not allowed!"
  );
 
+ $.validator.addMethod(
+      "phoneIn",
+      function(phoneNumber, element) {
+          phoneNumber = phoneNumber.replace(/\s+/g,"");
+          return this.optional(element) || phoneNumber.match(/^[6-9]\d{9}$/);
+      },
+      "Please specify a valid phone number");
+
 $(document).ready(function() {
  $("#registrationForm").validate({
      rules: {
          'userName': {
          required: true,
          minlength: 6,
-         maxlength: 20,
+         maxlength: 20
          },
 
          gender:{
@@ -41,13 +60,16 @@ $(document).ready(function() {
          },
 
          'dateOfBirth': {
-         minAge: 18
+           date:true,
+           minAge: 18,
+           maxAge: 60,
          },
 
          'phoneNumber': {
           required: true,
           minlength: 10,
-          maxlength: 10
+          maxlength: 10,
+          phoneIn: true
          },
 
          'biography': {
@@ -67,7 +89,9 @@ $(document).ready(function() {
          },
 
          dateOfBirth: {
-         minAge: "age should be 18!"
+         minAge: "age should be 18!",
+         maxAge: "You are not eligible.",
+         date: "Please enter a valid date format."
          },
 
          biography: {
@@ -77,6 +101,17 @@ $(document).ready(function() {
          phoneNumber: {
          required: "Fill Phone Field",
          maxlength: "Only 10 allowed!"
+         }
+     },
+
+     errorPlacement: function (error, element) {
+
+         if (element.attr("name") == "gender") {
+           error.addClass("invalid-feedback");
+           error.insertAfter("#gender-error");
+         } else {
+           error.addClass("invalid-feedback");
+           error.insertAfter(element);
          }
      },
 

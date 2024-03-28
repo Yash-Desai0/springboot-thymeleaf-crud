@@ -5,6 +5,7 @@
     <title>Actor List</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <style>
         body {
             display: flex;
@@ -87,7 +88,7 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/additional-methods.js"></script>
 <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
-
+<script src="http://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.2/js/toastr.min.js"></script>
 
 <!-- Modal -->
 <div class="modal fade" id="myModal" data-backdrop="static" data-keyboard="false">
@@ -96,9 +97,9 @@
 
             <!-- Modal header -->
             <div class="modal-header">
-                <h4 class="modal-title">Add Actor</h4>
+                <h4 id="form-title" class="modal-title">Add Actor</h4>
                 <span style="color:red" th:text="${error}"></span>
-                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="close" id="close-btn" data-dismiss="modal">&times;</button>
             </div>
 
             <!-- Modal body -->
@@ -125,7 +126,7 @@
                                    id="genderFemale" value="Female">
                             <label class="form-check-label" for="genderFemale">Female</label>
                         </div>
-                        <div id="genderError" class="gender-error"></div>
+                        <span id="gender-error" class="invalid-feedback d-block"></span>
                     </div>
 
                     <div class="form-group">
@@ -159,22 +160,32 @@
 </div>
 <script th:src="@{/js/app.js}"></script>
 <script>
-    var actors;
+    toastr.options = {
+        "closeButton": true,
+        "positionClass": "toast-top-right",
+        "timeOut": "5000" // 5 seconds
+    };
+        var actors;
 
-       $.ajax({
+        fetchActors();
+        // For Getting Data..
+        function fetchActors(){
+        $.ajax({
            method: 'GET',
            url: '/api/v1/actors',
            success: function (response) {
                actors = response.data;
-               console.log(response)
+               console.log(response);
                populateActorsAtDom(response)
            }
-       })
+        })
+        }
 
-       function populateActorsAtDom(actors = []) {
+
+        // For making Table view...
+        function populateActorsAtDom(actors = []) {
            const actorElementCountTag = document.getElementById("actor-count");
            actorElementCountTag.innerHTML = actors ? 'Total Actors: ' + actors.length : "No Actors Yet!";
-
            const actorElementDataDivTag = document.getElementById("actor-data")
 
            actors.forEach(({biography, dateOfBirth, gender, id, phoneNumber, userName}) => {
@@ -193,16 +204,16 @@
                    </tr>
                    `;
            })
-       }
+        }
 
-       function addActorHandler(event) {
+        // For Save or update Actor
+        function addActorHandler(event) {
            event.preventDefault();
            var IsValid = $("#registrationForm").valid();
            var selected = $("input[type='radio'][name='gender']:checked");
 
            if(IsValid)
            {
-               var ajaxResponse;
                var actor = {
                    id: document.getElementById("id").value,
                    userName: document.getElementById("userName").value,
@@ -221,8 +232,12 @@
                       url: "api/v1/actors",
                       data: JSON.stringify(actor),
                       success: (successResponse) => {
-                          ajaxResponse = successResponse;
-                          window.location.reload();
+                           //model hide and make call function that remove all body element.
+                            cleanBootStrapModel();
+                            fetchActors();
+                            $("#myModal").modal("hide");
+                                window.location.href = "/";
+                            <!--document.getElementById("close-btn").click();-->
                       },
                       error: (errorResponse) => {
                           console.log(errorResponse.responseText);
@@ -237,8 +252,7 @@
                       url: "/api/v1/actors/" + actor.id,
                       data: JSON.stringify(actor),
                       success: ({resultStatus}) => {
-
-                          console.log(resultStatus);
+                        window.location.href = "/";
                       },
                       error: (errorResponse) => {
                           console.log(errorResponse.responseText);
@@ -246,8 +260,9 @@
                   });
               }
            }
-       }
+        }
 
+        // Open Form with table row data
         function openSuccessResponseForm(id)
         {
             $.ajax
@@ -259,15 +274,23 @@
                 url: "/api/v1/actors/" + id,
                 success: (successResponse) =>
                 {
-
+                        console.log(successResponse.gender);
+                        document.getElementById("form-title").innerHTML = "Edit Actor";
                         $('#id').val(successResponse.id);
                         $('#userName').val(successResponse.userName);
+                        if(successResponse.gender === "Male")
+                        {
+                            document.getElementById("genderMale").checked = true;
+                        }
+                        else
+                        {
+                            document.getElementById("genderFemale").checked = true;
+                        }
                         $('#gender').val(successResponse.gender);
                         $('#dateOfBirth').val(successResponse.dateOfBirth);
                         $('#phoneNumber').val(successResponse.phoneNumber);
                         $('#biography').val(successResponse.biography);
 
-                    console.log("ej");
                 },
                 error: (errorResponse) => {
                     console.log("something bad happended!");
@@ -275,36 +298,47 @@
             });
         }
 
-    function deleteActorById(id) {
-        $.ajax({
-                async: false,
-                type: "DELETE",
-                contentType: "application/json",
-                dataType: "json",
-                url: "/api/v1/actors/" + id,
-                success: ({resultStatus}) => {
-                    console.log(resultStatus)
-                    if (resultStatus.status === "SUCCESS") {
-                        removeActorFromDom(id);
-                        alert("Actor deleted successfully")
-                        window.location.reload();
-                    } else {
-                        alert(resultStatus.errorMessage);
-                    }
-                },
-                error: (errorResponse) => {
-                    alert("something bad happended!");
-                },
-        })
-    }
-
-    function removeActorFromDom(id) {
-        const actorToRemove = document.getElementById("actor_id_" + id);
-        console.log(actorToRemove)
-        if (actorToRemove != null) {
-            actorToRemove.remove();
+        // Delete the row data
+        function deleteActorById(id) {
+            $.ajax({
+                    async: false,
+                    type: "DELETE",
+                    contentType: "application/json",
+                    dataType: "json",
+                    url: "/api/v1/actors/" + id,
+                    success: ({resultStatus}) => {
+                        console.log(resultStatus)
+                        if (resultStatus.status === "SUCCESS") {
+                            removeActorFromDom(id);
+                            alert("Actor deleted successfully")
+                            window.location.reload();
+                        } else {
+                            alert(resultStatus.errorMessage);
+                        }
+                    },
+                    error: (errorResponse) => {
+                        alert("something bad happended!");
+                    },
+            })
         }
-    }
+
+        // After successful fetch id remove
+        function removeActorFromDom(id) {
+            const actorToRemove = document.getElementById("actor_id_" + id);
+            console.log(actorToRemove)
+            if (actorToRemove != null) {
+                actorToRemove.remove();
+            }
+        }
+
+        function cleanBootStrapModel(){
+           document.getElementById("userName").value = "",
+           document.getElementsByName("gender").value = "",
+           document.getElementById("dateOfBirth").value = "",
+           document.getElementById("phoneNumber").value = "",
+           document.getElementById("biography").value = ""
+        }
+
 </script>
 </body>
 </html>
