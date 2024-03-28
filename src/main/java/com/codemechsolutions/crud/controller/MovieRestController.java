@@ -36,8 +36,8 @@ public class MovieRestController {
     }
 
     @PutMapping(APIConstant.MOVIE_ID)
-    public ResponseEntity<ResultStatusResponse> updateMovie(@PathVariable Long id, @Valid @RequestBody Movie movie) throws ResourceNotFoundException {
-        return movieService.updateMovie(id, movie);
+    public ResponseEntity<ResultStatusResponse> updateMovie(@PathVariable Long id, @Valid @RequestBody MovieRequest movieRequest) throws ResourceNotFoundException {
+        return movieService.updateMovie(id, movieRequest);
     }
 
     @DeleteMapping(APIConstant.MOVIE_ID)

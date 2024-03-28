@@ -14,7 +14,7 @@ public interface MovieService {
 
     ResponseEntity<ResultStatusResponse> saveMovie(Movie movie );
 
-    ResponseEntity<ResultStatusResponse> updateMovie(Long id, Movie movie) throws ResourceNotFoundException;
+    ResponseEntity<ResultStatusResponse> updateMovie(Long id, MovieRequest movieRequest) throws ResourceNotFoundException;
 
     ResponseEntity<ResultStatusResponse> deleteMovieById(Long id) throws ResourceNotFoundException;
 

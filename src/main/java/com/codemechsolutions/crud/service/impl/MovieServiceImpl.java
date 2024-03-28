@@ -71,13 +71,15 @@ public class MovieServiceImpl implements MovieService {
 
     }
 
-    public ResponseEntity<ResultStatusResponse> updateMovie(Long movieId,Movie movieDetails) throws  ResourceNotFoundException{
+    public ResponseEntity<ResultStatusResponse> updateMovie(Long movieId,MovieRequest movieRequest) throws  ResourceNotFoundException{
 
         Movie movie = getById(movieId);
 
-        movie.setGenre(movieDetails.getGenre());
-        movie.setReleaseDate(movieDetails.getReleaseDate());
-        movie.setActors(movieDetails.getActors());
+
+        movie.setGenre(movieRequest.getGenre());
+        movie.setReleaseDate(movieRequest.getReleaseDate());
+        movie.setActors(actorRepository.findActorsByIdIn(movieRequest.getActors()));
+
         try{
             movieRepository.save(movie);
             return new ResponseEntity<>(generateSuccessMessage(),HttpStatus.OK);

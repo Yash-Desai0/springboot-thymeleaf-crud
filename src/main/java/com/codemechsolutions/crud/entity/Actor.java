@@ -25,7 +25,7 @@ public class Actor {
     private String biography;
 
     @JsonIgnore
-    @ManyToMany(mappedBy = "actors")
+    @ManyToMany(mappedBy = "actors",cascade = {CascadeType.DETACH,CascadeType.REFRESH,CascadeType.MERGE})
     public List<Movie> movies = new ArrayList<>();
 
     public Actor(String userName, String gender, LocalDate dateOfBirth, String phoneNumber, String biography) {

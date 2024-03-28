@@ -168,7 +168,7 @@
             $("#actors").empty();
             data.forEach(function (actor) {
             console.log(actor.userName);
-                $("#actors").append(`<option value="${actor.id}">${actor.userName}</option>`);
+                $("#actors").append(`<option value="${actor.id}">${actor.userName}</option>`);  // getting String
             });
             $("#actors").trigger('chosen:updated');
         });
@@ -226,7 +226,7 @@
                    actors: $('#actors').val(),
                };
 
-               console.log(movie.actors);  // Print actors object that map with the movie
+               console.log(movie.actors);  // Print actors object that map with the movie  [ get the 44 ]
 
 
 
@@ -318,11 +318,26 @@
                 url: "/api/v1/movies/" + id,
                 success: (successResponse) =>
                 {
+                    console.log(successResponse.actors);
+
                     $('#id').val(successResponse.id);
                     $('#title').val(successResponse.title);
                     $('#genre').val(successResponse.genre);
                     $('#releaseDate').val(successResponse.releaseDate);
-                    $('#actors').val(successResponse.actors);
+
+                    const actors = new Array(successResponse.actors);
+
+                         $("#actors").empty();
+                        (successResponse.actors).forEach(function (actor) {
+                            console.log(actor.userName);
+                            console.log(actor.id);
+                            $("#actors").append(`<option value="${actor.id}">${actor.userName}</option>`);  // getting String
+                        });
+                        console.log("here");
+
+                        $("#actors").trigger('chosen:updated');
+
+
                     console.log("done");
                 },
                 error: (errorResponse) => {
