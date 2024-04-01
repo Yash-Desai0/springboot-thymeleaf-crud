@@ -22,7 +22,6 @@ public class ActorMoviePortalException extends Exception {
         this.httpStatus = httpStatus;
     }
 
-
     public ActorMoviePortalException(String message, Throwable throwable) {
         super(message, throwable);
         this.localMessage = message;

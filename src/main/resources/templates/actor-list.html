@@ -25,7 +25,7 @@
                         <div class="row">
                             <div class="col">
                                 <!-- Button trigger modal -->
-                                <button class="btn btn-primary btn-block mb-3" onclick="cleanActorForm()" data-toggle="modal" data-target="#myModal">Add Actor</button>
+                                <button class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#myModal">Add Actor</button>
                             </div>
                             <div class="col">
                                 <a th:href="@{/movies}"><button class="btn btn-primary btn-block mb-3">Show Movies</button></a>
@@ -41,7 +41,8 @@
                                         <th>Gender</th>
                                         <th>Date Of Birth</th>
                                         <th>Phone</th>
-                                        <th>Biography</th>
+                                        <th>Biography
+                                        <th>Image</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -74,7 +75,7 @@
 <!-- END: Middle Section-->
 
 <!-- BEGIN: Modal -->
-<div class="modal fade" id="myModal">
+<div class="modal fade" id="myModal" enctype="multipart/form-data">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
@@ -82,12 +83,12 @@
             <div class="modal-header">
                 <h4 id="form-title" class="modal-title">Add Actor</h4>
                 <!--<span style="color:red" th:text="${error}"></span>-->
-                <button type="button" class="close" id="close-btn" data-dismiss="modal">&times;</button>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
             <!-- Modal body -->
             <div class="modal-body">
-                <form id="actorForm" autocomplete="off">
+                <form id="actorForm" autocomplete="off" enctype="multipart/form-data">
                     <input type="number" id="id" hidden="hidden" />
 
                     <div class="form-group">
@@ -123,10 +124,15 @@
                         <textarea class="form-control" id="biography" name="biography" rows="3" placeholder="I am ..." ></textarea>
                     </div>
 
+                    <div class="form-group">
+                        <label class="control-label" for="image">Profile picture</label>
+                        <input class="form-control-file" id="image" name="image" accept="image/*" type="file" placeholder="Choose an image" >
+                    </div>
+
                     <!-- Modal footer -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-success" data-dismiss="modal" >Close</button>
-                        <button type="button" class="btn btn-primary" onclick="addActorHandler(event)" >Submit</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
              </div>

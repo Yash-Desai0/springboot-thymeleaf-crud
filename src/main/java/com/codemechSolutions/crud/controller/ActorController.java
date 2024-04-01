@@ -7,12 +7,14 @@ import com.codemechSolutions.crud.exception.ActorMoviePortalException;
 import com.codemechSolutions.crud.service.ActorService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.io.IOException;
 import java.util.List;
 
 @RestController
-@RequestMapping(APIConstant.ACTOR_URL)
+@RequestMapping(APIConstant.ACTOR_URL) //api/v1/actors
 public class ActorController {
 
     private final ActorService actorService;
@@ -22,7 +24,10 @@ public class ActorController {
     }
 
     @PostMapping
-    public ResponseEntity<ResultStatusResponse> saveActor(@Valid @RequestBody Actor actor) {
+    public ResponseEntity<ResultStatusResponse> saveActor(
+            @Valid @ModelAttribute Actor actor) throws IOException {
+//        System.out.println(file.getOriginalFilename());
+        System.out.println(actor);
         return actorService.saveActor(actor);
     }
 
@@ -32,8 +37,9 @@ public class ActorController {
     }
 
     @PutMapping(APIConstant.ACTOR_ID)
-    public ResponseEntity<ResultStatusResponse> updateActor(@PathVariable Long id, @Valid @RequestBody Actor actor) throws ActorMoviePortalException {
-        return actorService.updateActor(id, actor);
+    public ResponseEntity<ResultStatusResponse> updateActor(@PathVariable Long id, @Valid @RequestBody Actor actor,@RequestParam("image") MultipartFile file) throws ActorMoviePortalException,IOException {
+        System.out.println(file.getOriginalFilename());
+        return actorService.updateActor(id, actor,file);
     }
 
     @DeleteMapping(APIConstant.ACTOR_ID)

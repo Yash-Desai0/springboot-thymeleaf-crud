@@ -21,7 +21,7 @@
                         <div class="row">
                             <div class="col">
                                 <!-- Button trigger modal -->
-                                <button class="btn btn-primary btn-block mb-3" onclick="cleanMovieForm()" data-toggle="modal" data-target="#myModal">Add Movie</button>
+                                <button type="button" class="btn btn-primary btn-block mb-3" data-toggle="modal" data-target="#myModal">Add Movie</button>
                             </div>
                             <div class="col">
                                 <a th:href="@{/}"><button class="btn btn-primary btn-block mb-3">Show Actors</button></a>
@@ -68,7 +68,7 @@
 </section>
 
 <!-- Modal -->
-<div class="modal fade" id="myModal" >
+<div class="modal fade" id="myModal">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
 
@@ -76,7 +76,7 @@
             <div class="modal-header">
                 <h4 id="form-title" class="modal-title">Add Movie</h4>
                 <!--<span style="color:red" th:text="${error}"></span>-->
-                <button type="button" id="close-btn" class="close" data-dismiss="modal">&times;</button>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
             <!-- Modal body -->
@@ -117,8 +117,8 @@
 
                     <!-- Modal footer -->
                     <div class="modal-footer">
-                        <button type="button" class="btn btn-success"  data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary" onclick="addMovieHandler(event)">Submit</button>
+                        <button type="button" class="btn btn-success" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
                 </form>
             </div>

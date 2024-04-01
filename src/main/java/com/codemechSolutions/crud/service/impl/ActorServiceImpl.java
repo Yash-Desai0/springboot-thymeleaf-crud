@@ -12,7 +12,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Base64;
 import java.util.List;
 import static com.codemechSolutions.crud.constant.APIConstant.CLS_MET_ERROR;
 import static com.codemechSolutions.crud.constant.APIConstant.MET_GET_ACTOR_BY_ID;
@@ -49,8 +52,17 @@ public class ActorServiceImpl implements ActorService {
     }
 
     @Override
-    public ResponseEntity<ResultStatusResponse> saveActor(Actor actor) {
+    public ResponseEntity<ResultStatusResponse> saveActor(Actor actor) throws IOException {
         try {
+            byte[] decodedData = Base64.getDecoder().decode(actor.getImage());
+            actor.setImage(decodedData);
+//            if(file != null)
+//            {
+//                /*byte[] decodedBytes = Base64.getDecoder().decode(encodedString);*/
+//                System.out.println(file);
+//                actor.setImageName(file.getOriginalFilename());
+//                actor.setImage(file.getBytes());
+//            }
             actorRepository.save(actor);
             return new ResponseEntity<>(generateSuccessMessage(), HttpStatus.OK);
         } catch (Exception e) {
@@ -69,14 +81,25 @@ public class ActorServiceImpl implements ActorService {
         return actorRepository.findByMoviesId(movieId);
     }*/
 
-    public ResponseEntity<ResultStatusResponse> updateActor(Long actorId, Actor actorDetails) throws ActorMoviePortalException {
+    public ResponseEntity<ResultStatusResponse> updateActor(Long actorId, Actor actorDetails,MultipartFile file) throws ActorMoviePortalException,IOException {
         try {
             Actor actor = getById(actorId);
-            actor.setDateOfBirth(actor.getDateOfBirth());
-            actor.setGender(actor.getGender());
+            actor.setDateOfBirth(actorDetails.getDateOfBirth());
+            actor.setGender(actorDetails.getGender());
             actor.setPhoneNumber(actorDetails.getPhoneNumber());
             actor.setBiography(actorDetails.getBiography());
-
+            try {
+                if (file != null)
+                {
+                    actor.setImageName(file.getOriginalFilename());
+                    actor.setImage(file.getBytes());
+                }
+            }
+            catch(IOException e)
+            {
+                e.printStackTrace();
+                e.getMessage();
+            }
             actorRepository.save(actor);
             return new ResponseEntity<>(generateSuccessMessage(), HttpStatus.OK);
         } catch (ActorMoviePortalException e) {

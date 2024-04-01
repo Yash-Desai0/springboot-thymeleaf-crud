@@ -10,3 +10,36 @@
 
 </body>
 </html>
+$(document).ready(function() {
+$('#addUser').click(function() {
+var user = {
+username: $('#username').val(),
+gender: $('#gender').val(),
+dob: $('#dob').val(),
+phone: $('#phone').val(),
+biography: $('#biography').val()
+};
+
+// Convert user object to JSON string
+var userData = JSON.stringify(user);
+
+var formData = new FormData();
+formData.append('user', userData);
+formData.append('image', $('#image')[0].files[0]);
+
+$.ajax({
+type: "POST",
+url: "http://localhost:8080/users",
+data: formData,
+processData: false,
+contentType: false,
+success: function(response) {
+alert("User added successfully");
+console.log(response);
+},
+error: function(xhr, status, error) {
+console.error("Error adding user:", error);
+}
+});
+});
+});

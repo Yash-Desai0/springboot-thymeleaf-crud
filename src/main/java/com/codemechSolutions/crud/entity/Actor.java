@@ -23,6 +23,14 @@ public class Actor {
     private LocalDate dateOfBirth;
     private String phoneNumber;
     private String biography;
+    private String imageName;
+    @Lob
+    private byte[] image;
+
+    private MultipartFile file;
+
+
+
 
     @JsonIgnore
     @ManyToMany(mappedBy = "actors",cascade = {CascadeType.DETACH,CascadeType.REFRESH,CascadeType.MERGE})
