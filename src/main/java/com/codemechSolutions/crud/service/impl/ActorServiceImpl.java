@@ -5,6 +5,7 @@ import com.codemechSolutions.crud.domain.ResultStatusResponse;
 import com.codemechSolutions.crud.domain.ResultStatus;
 import com.codemechSolutions.crud.exception.ActorMoviePortalException;
 import com.codemechSolutions.crud.repository.ActorRepository;
+import com.codemechSolutions.crud.request.ActorRequest;
 import com.codemechSolutions.crud.service.ActorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +13,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 import static com.codemechSolutions.crud.constant.APIConstant.CLS_MET_ERROR;
@@ -23,6 +26,7 @@ import static com.codemechSolutions.crud.constant.APIConstant.MET_GET_ALL_ACTORS
 import static com.codemechSolutions.crud.constant.APIConstant.MET_SAVE_ACTOR;
 import static com.codemechSolutions.crud.constant.APIConstant.MET_UPDATE_ACTOR_BY_ID;
 import static com.codemechSolutions.crud.constant.APIConstant.MET_DELETE_ACTOR_BY_ID;
+
 @Service
 public class ActorServiceImpl implements ActorService {
 
@@ -52,17 +56,17 @@ public class ActorServiceImpl implements ActorService {
     }
 
     @Override
-    public ResponseEntity<ResultStatusResponse> saveActor(Actor actor) throws IOException {
+    public ResponseEntity<ResultStatusResponse> saveActor(ActorRequest actorRequest) throws IOException {
         try {
-            byte[] decodedData = Base64.getDecoder().decode(actor.getImage());
-            actor.setImage(decodedData);
-//            if(file != null)
-//            {
-//                /*byte[] decodedBytes = Base64.getDecoder().decode(encodedString);*/
-//                System.out.println(file);
-//                actor.setImageName(file.getOriginalFilename());
-//                actor.setImage(file.getBytes());
-//            }
+            Actor actor = new Actor();
+            actor.setUserName(actorRequest.getUserName());
+            actor.setGender(actorRequest.getGender());
+            actor.setDateOfBirth(actorRequest.getDateOfBirth());
+            actor.setPhoneNumber(actorRequest.getPhoneNumber());
+            actor.setBiography(actorRequest.getBiography());
+            actor.setImage(actorRequest.getImage().getBytes());
+            actor.setImageName(actorRequest.getImage().getOriginalFilename());
+
             actorRepository.save(actor);
             return new ResponseEntity<>(generateSuccessMessage(), HttpStatus.OK);
         } catch (Exception e) {
@@ -71,38 +75,34 @@ public class ActorServiceImpl implements ActorService {
         }
     }
 
-    /*@Override
-    public boolean getActorByUserName(String userName) {
-        return actorRepository.findByUserName(userName);
-    }*/
-
-    /*@Override
-    public List<Actor> getAllActorsByMovieId(Long movieId){
-        return actorRepository.findByMoviesId(movieId);
-    }*/
-
-    public ResponseEntity<ResultStatusResponse> updateActor(Long actorId, Actor actorDetails,MultipartFile file) throws ActorMoviePortalException,IOException {
+    public ResponseEntity<ResultStatusResponse> updateActor(Long actorId, ActorRequest actorRequest) throws ActorMoviePortalException, IOException {
         try {
+
             Actor actor = getById(actorId);
-            actor.setDateOfBirth(actorDetails.getDateOfBirth());
-            actor.setGender(actorDetails.getGender());
-            actor.setPhoneNumber(actorDetails.getPhoneNumber());
-            actor.setBiography(actorDetails.getBiography());
-            try {
-                if (file != null)
-                {
-                    actor.setImageName(file.getOriginalFilename());
-                    actor.setImage(file.getBytes());
-                }
-            }
-            catch(IOException e)
-            {
-                e.printStackTrace();
-                e.getMessage();
-            }
+            actor.setUserName(actorRequest.getUserName());
+            actor.setGender(actorRequest.getGender());
+            actor.setDateOfBirth(actorRequest.getDateOfBirth());
+            actor.setPhoneNumber(actorRequest.getPhoneNumber());
+            actor.setBiography(actorRequest.getBiography());
+            actor.setImage(actorRequest.getImage().getBytes());
+            actor.setImageName(actorRequest.getImage().getOriginalFilename());
+
             actorRepository.save(actor);
             return new ResponseEntity<>(generateSuccessMessage(), HttpStatus.OK);
-        } catch (ActorMoviePortalException e) {
+        }
+        catch(IOException e)
+        {
+            e.getMessage();
+            e.printStackTrace();
+             throw e;
+        }
+        catch(MultipartException e)
+        {
+            e.getMessage();
+            e.printStackTrace();
+            throw e;
+        }
+        catch (ActorMoviePortalException e) {
             throw e;
         } catch (Exception e) {
             LOGGER.error(CLS_MET_ERROR, this.getClass(), MET_UPDATE_ACTOR_BY_ID, e.getMessage());
@@ -132,4 +132,14 @@ public class ActorServiceImpl implements ActorService {
         resultStatus.setStatus("SUCCESS");
         return new ResultStatusResponse(resultStatus);
     }
+
+    /*@Override
+    public boolean getActorByUserName(String userName) {
+        return actorRepository.findByUserName(userName);
+    }*/
+
+    /*@Override
+    public List<Actor> getAllActorsByMovieId(Long movieId){
+        return actorRepository.findByMoviesId(movieId);
+    }*/
 }
