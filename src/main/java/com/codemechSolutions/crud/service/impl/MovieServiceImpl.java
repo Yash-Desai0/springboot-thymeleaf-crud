@@ -1,11 +1,14 @@
-package com.codemechsolutions.crud.service.impl;
+package com.codemechSolutions.crud.service.impl;
 
-import com.codemechsolutions.crud.domain.ResultStatus;
-import com.codemechsolutions.crud.domain.ResultStatusResponse;
-import com.codemechsolutions.crud.entity.Movie;
-import com.codemechsolutions.crud.exception.ResourceNotFoundException;
-import com.codemechsolutions.crud.repository.MovieRepository;
-import com.codemechsolutions.crud.service.MovieService;
+import com.codemechSolutions.crud.entity.Actor;
+import com.codemechSolutions.crud.entity.Movie;
+import com.codemechSolutions.crud.exception.ActorMoviePortalException;
+import com.codemechSolutions.crud.request.MovieRequest;
+import com.codemechSolutions.crud.service.MovieService;
+import com.codemechSolutions.crud.domain.ResultStatus;
+import com.codemechSolutions.crud.domain.ResultStatusResponse;
+import com.codemechSolutions.crud.repository.ActorRepository;
+import com.codemechSolutions.crud.repository.MovieRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -21,26 +24,22 @@ import static com.codemechSolutions.crud.constant.APIConstant.MET_GET_ALL_MOVIES
 import static com.codemechSolutions.crud.constant.APIConstant.MET_SAVE_MOVIE;
 import static com.codemechSolutions.crud.constant.APIConstant.MET_DELETE_MOVIE_BY_ID;
 
-import static com.codemechsolutions.crud.constant.APIConstant.CLS_MET_ERROR;
-
 @Service
 public class MovieServiceImpl implements MovieService {
     private static final Logger LOGGER = LoggerFactory.getLogger(MovieService.class);
 
      private final MovieRepository movieRepository;
+     private final ActorRepository actorRepository;
 
-    public MovieServiceImpl(MovieRepository movieRepository) {
+    public MovieServiceImpl(MovieRepository movieRepository, ActorRepository actorRepository) {
         this.movieRepository = movieRepository;
+        this.actorRepository = actorRepository;
     }
-    private Movie  getById(Long id) throws ResourceNotFoundException {
-        return movieRepository.findById(id)
-                .orElseThrow(() ->new ResourceNotFoundException("movie not found by given id :: "+id));
-    }
+
 
     @Override
-    public ResponseEntity<Movie> getMovieById(Long id) throws ResourceNotFoundException {
-        try
-        {
+    public ResponseEntity<Movie> getMovieById(Long id) throws ActorMoviePortalException {
+        try {
             return new ResponseEntity<>(getById(id), HttpStatus.OK);
         }catch (ActorMoviePortalException e) {
             throw e;
@@ -60,8 +59,17 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public ResponseEntity<ResultStatusResponse> saveMovie(Movie movie){
+    public ResponseEntity<ResultStatusResponse> saveMovie(MovieRequest movieRequest){
         try{
+
+            List<Actor> actors = actorRepository.findActorsByIdIn(movieRequest.getActors());
+
+            Movie movie = new Movie();
+            movie.setTitle(movieRequest.getTitle());
+            movie.setReleaseDate(movieRequest.getReleaseDate());
+            movie.setGenre(movieRequest.getGenre());
+            movie.setActors(actors);
+
             movieRepository.save(movie);
             return new ResponseEntity<>(generateSuccessMessage(),HttpStatus.OK);
         }
@@ -72,7 +80,7 @@ public class MovieServiceImpl implements MovieService {
         }
     }
 
-    public ResponseEntity<ResultStatusResponse> updateMovie(Long movieId,MovieRequest movieRequest) throws  ResourceNotFoundException{
+    public ResponseEntity<ResultStatusResponse> updateMovie(Long movieId,MovieRequest movieRequest) throws ActorMoviePortalException{
 
         try{
             Movie movie = getById(movieId);
@@ -94,17 +102,15 @@ public class MovieServiceImpl implements MovieService {
     }
 
     @Override
-    public ResponseEntity<ResultStatusResponse> deleteMovieById(Long movieId) throws ResourceNotFoundException {
-        try
-        {
-            getById(movieId);
-            movieRepository.deleteById(movieId);
-            return new ResponseEntity<>(generateSuccessMessage(),HttpStatus.OK);
-        }
-        catch (Exception e)
-        {
-            LOGGER.error(CLS_MET_ERROR, this.getClass(), MET_FETCH_MOVIE_BY_ID, e.getMessage());
+    public ResponseEntity<ResultStatusResponse> deleteMovieById(Long movieId) throws ActorMoviePortalException {
+        try {
+             movieRepository.delete(getById(movieId));
+            return new ResponseEntity<>(generateSuccessMessage(), HttpStatus.OK);
+        } catch (ActorMoviePortalException e) {
             throw e;
+        } catch (Exception e) {
+            LOGGER.error(CLS_MET_ERROR, this.getClass(), MET_DELETE_MOVIE_BY_ID, e.getMessage());
+            throw new ActorMoviePortalException("Unable to delete Movie. Try again later.");
         }
     }
 

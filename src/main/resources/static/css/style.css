@@ -1,0 +1,14 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f8f9fa;
+}
+
+label.error {
+    font-size:15px;
+    color: red;
+    padding: 2px 8px;
+    margin-top: 2px;
+}

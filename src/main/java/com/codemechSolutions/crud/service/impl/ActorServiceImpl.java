@@ -7,13 +7,14 @@ import com.codemechSolutions.crud.exception.ActorMoviePortalException;
 import com.codemechSolutions.crud.repository.ActorRepository;
 import com.codemechSolutions.crud.request.ActorRequest;
 import com.codemechSolutions.crud.service.ActorService;
+import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartException;
+import org.springframework.util.MimeTypeUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -64,8 +65,6 @@ public class ActorServiceImpl implements ActorService {
             actor.setDateOfBirth(actorRequest.getDateOfBirth());
             actor.setPhoneNumber(actorRequest.getPhoneNumber());
             actor.setBiography(actorRequest.getBiography());
-            actor.setImage(actorRequest.getImage().getBytes());
-            actor.setImageName(actorRequest.getImage().getOriginalFilename());
 
             actorRepository.save(actor);
             return new ResponseEntity<>(generateSuccessMessage(), HttpStatus.OK);
@@ -75,7 +74,43 @@ public class ActorServiceImpl implements ActorService {
         }
     }
 
-    public ResponseEntity<ResultStatusResponse> updateActor(Long actorId, ActorRequest actorRequest) throws ActorMoviePortalException, IOException {
+    public ResponseEntity<ResultStatusResponse> updateActorImage(Long actorId,MultipartFile imageFile) throws ActorMoviePortalException {
+        try {
+            Actor actor = getById(actorId);
+            if(imageFile != null)
+            {
+                actor.setImage(imageFile.getBytes());
+                actor.setImageName(imageFile.getOriginalFilename());
+            }
+
+            actorRepository.save(actor);
+            return new ResponseEntity<>(generateSuccessMessage(), HttpStatus.OK);
+        } catch (ActorMoviePortalException e)
+        {
+            throw e;
+        }
+        catch (Exception e) {
+            LOGGER.error(CLS_MET_ERROR, this.getClass(), MET_UPDATE_ACTOR_BY_ID, e.getMessage());
+            throw new ActorMoviePortalException("Unable to update Actor profile picture. Try again later.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    /*public void getActorImageById(Long actorId,HttpServletResponse response) throws ActorMoviePortalException{
+        try {
+            Actor actor = getById(actorId);
+            response.setContentType(MimeTypeUtils.APPLICATION_OCTET_STREAM.getType());
+            response.getOutputStream().write(actor.getImage());
+            response.getOutputStream().close();
+        }
+        catch (ActorMoviePortalException e) {
+            throw e;
+        } catch (Exception e) {
+            LOGGER.error(CLS_MET_ERROR, this.getClass(), MET_UPDATE_ACTOR_BY_ID, e.getMessage());
+            throw new ActorMoviePortalException("Unable to fetch actor image. Try again later.");
+        }
+    }*/
+
+    public ResponseEntity<ResultStatusResponse> updateActor(Long actorId, ActorRequest actorRequest) throws ActorMoviePortalException{
         try {
 
             Actor actor = getById(actorId);
@@ -84,23 +119,9 @@ public class ActorServiceImpl implements ActorService {
             actor.setDateOfBirth(actorRequest.getDateOfBirth());
             actor.setPhoneNumber(actorRequest.getPhoneNumber());
             actor.setBiography(actorRequest.getBiography());
-            actor.setImage(actorRequest.getImage().getBytes());
-            actor.setImageName(actorRequest.getImage().getOriginalFilename());
 
             actorRepository.save(actor);
             return new ResponseEntity<>(generateSuccessMessage(), HttpStatus.OK);
-        }
-        catch(IOException e)
-        {
-            e.getMessage();
-            e.printStackTrace();
-             throw e;
-        }
-        catch(MultipartException e)
-        {
-            e.getMessage();
-            e.printStackTrace();
-            throw e;
         }
         catch (ActorMoviePortalException e) {
             throw e;
@@ -123,7 +144,7 @@ public class ActorServiceImpl implements ActorService {
         }
     }
 
-    private Actor getById(Long id) throws ActorMoviePortalException {
+    public Actor getById(Long id) throws ActorMoviePortalException {
         return actorRepository.findById(id) .orElseThrow(() -> new ActorMoviePortalException("Actor not found by given id :: " + id, HttpStatus.BAD_REQUEST));
     }
 

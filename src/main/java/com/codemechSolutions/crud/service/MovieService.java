@@ -9,14 +9,14 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface MovieService {
-    ResponseEntity<Movie> getMovieById(Long id) throws ResourceNotFoundException;
+    ResponseEntity<Movie> getMovieById(Long id) throws ActorMoviePortalException;
 
-    ResponseEntity<List<Movie>> getAllMovies() throws ResourceNotFoundException;
+    ResponseEntity<List<Movie>> getAllMovies() throws ActorMoviePortalException;
 
-    ResponseEntity<ResultStatusResponse> saveMovie(Movie movie );
+    ResponseEntity<ResultStatusResponse> saveMovie(MovieRequest movieRequest);
 
-    ResponseEntity<ResultStatusResponse> updateMovie(Long id, MovieRequest movieRequest) throws ResourceNotFoundException;
+    ResponseEntity<ResultStatusResponse> updateMovie(Long id, MovieRequest movieRequest) throws ActorMoviePortalException;
 
-    ResponseEntity<ResultStatusResponse> deleteMovieById(Long id) throws ResourceNotFoundException;
+    ResponseEntity<ResultStatusResponse> deleteMovieById(Long id) throws ActorMoviePortalException;
 
 }

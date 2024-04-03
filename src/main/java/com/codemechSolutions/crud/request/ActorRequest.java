@@ -19,7 +19,7 @@ public class ActorRequest {
     private LocalDate dateOfBirth;
     private String phoneNumber;
     private String biography;
-    @DateTimeFormat(pattern = "yyyy-MM-dd")
+//    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private MultipartFile image;
     private List<Movie> movies;
 }
