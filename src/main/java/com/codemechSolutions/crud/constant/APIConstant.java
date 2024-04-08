@@ -2,9 +2,16 @@ package com.codemechSolutions.crud.constant;
 
 public interface APIConstant {
 
+
+    //Auth API Constant
+    String AUTH = "/auth";
+    String REGISTER = "/register";
+    String LOGIN = "/login";
+
+
+
     /*Api base urls*/
     String BASE_URL = "/api/v1";
-
 
     /*Actor base urls*/
     String ACTOR_URL = BASE_URL+"/actors";
@@ -13,6 +20,33 @@ public interface APIConstant {
     /*Movie base urls*/
     String MOVIE_URL = BASE_URL+"/movies";
     String MOVIE_ID = "/{id}";
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     /*  LOGGER   */
     String CLS_MET_ERROR = "class = {} method={} errorMessage={}";

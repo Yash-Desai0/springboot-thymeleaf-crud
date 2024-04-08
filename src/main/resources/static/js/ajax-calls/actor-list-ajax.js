@@ -1,10 +1,16 @@
     var actors;     // for render table view
 
+    // Get the token from localStorage
+    var token = localStorage.getItem('jwtToken');
+
         fetchActors();  // when page load show all actors.
 
         function fetchActors(){
             $.ajax({
                 method: 'GET',
+                headers: {
+                        'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                    },
                 url: '/api/v1/actors',
                 success: function (response) {
                          actors = response.data;
@@ -88,6 +94,9 @@
                   async: false,
                   type: 'POST',
                   url: '/api/v1/actors',
+                  headers: {
+                                          'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                                      },
                   contentType: "application/json",
                   dataType: "json",
                   data: JSON.stringify(actor),
@@ -111,6 +120,9 @@
             $.ajax({
                   async: false,
                   type: 'PUT',
+                  headers: {
+                                                            'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                                                        },
                   url: "/api/v1/actors/" + id +'/updateImage',
                   data: formData,
                   mimeType: 'multipart/form-data',
@@ -135,6 +147,9 @@
                     $.ajax({
                           async: false,
                           type: 'PUT',
+                          headers: {
+                                                                    'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                                                                },
                           url: '/api/v1/actors/' + id,
                           contentType: "application/json",
                           dataType: "json",
@@ -202,6 +217,9 @@
             ({
                 async: false,
                 type: "GET",
+                headers: {
+                                                          'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                                                      },
                 contentType: "application/json",
                 dataType: "json",
                 url: "/api/v1/actors/" + id,
@@ -214,7 +232,6 @@
                         $('#dateOfBirth').val(successResponse.dateOfBirth);
                         $('#phoneNumber').val(successResponse.phoneNumber);
                         $('#biography').val(successResponse.biography);
-                        $('#image').val(successResponse.image);
                 },
                 error: (errorResponse) => {
                     toastr.error("something bad happended!");
@@ -228,6 +245,9 @@
             $.ajax({
                     async: false,
                     type: "DELETE",
+                    headers: {
+                                                              'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                                                          },
                     contentType: "application/json",
                     dataType: "json",
                     url: "/api/v1/actors/" + id,
@@ -244,4 +264,10 @@
                     },
             })
         }
+
+        // Clear the token from localStorage on logout
+        $('#logoutButton').click(function() {
+            localStorage.removeItem('jwtToken');
+        });
+
 

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 
 <!-- BEGIN: Head-->
 <head>
@@ -13,7 +13,10 @@
 
 <!-- BEGIN: Body-->
 <body>
-
+<h1 th:inline="text">Hello <span th:remove="tag" sec:authentication="name">thymeleaf</span>!</h1>
+<form th:action="@{/logout}" id="logoutButton" method="post">
+    <input type="submit" value="Sign Out"/>
+</form>
 <!-- BEGIN: Middle Section-->
 <section class="middle search">
     <div class="container" id="actorContainer">

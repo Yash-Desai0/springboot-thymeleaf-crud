@@ -3,6 +3,8 @@
 
     var actorOptions;           // For store actor Options and make it global for access letter.
 
+    var token = localStorage.getItem('jwtToken');
+
     fetchActorOptions();        // when page load fetch actor options from the database
 
     fetchMovies();              // When page load show all movies.
@@ -21,6 +23,9 @@
     function fetchMovies(){
         $.ajax({
                method: 'GET',
+               headers: {
+                                                         'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                                                     },
                url: '/api/v1/movies',
                success: function (response) {
                         movies = response.data;
@@ -93,6 +98,9 @@
                async: false,
                type: movie.id ? 'PUT' : 'POST',
                url: url,
+               headers: {
+                                                         'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                                                     },
                contentType: "application/json",
                dataType: "json",
                data: JSON.stringify(movie),
@@ -118,6 +126,9 @@
             ({
                 async: false,
                 type: "GET",
+                headers: {
+                                                          'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                                                      },
                 contentType: "application/json",
                 dataType: "json",
                 url: "/api/v1/movies/" + id,
@@ -148,6 +159,9 @@
             $.ajax({
                     async: false,
                     type: "DELETE",
+                    headers: {
+                                                              'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                                                          },
                     contentType: "application/json",
                     dataType: "json",
                     url: "/api/v1/movies/" + id,
@@ -165,3 +179,7 @@
     }
 
 
+    // Clear the token from localStorage on logout
+            $('#logoutButton').click(function() {
+                localStorage.removeItem('jwtToken');
+            });

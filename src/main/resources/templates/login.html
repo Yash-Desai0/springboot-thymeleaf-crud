@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+>
+<head>
+    <meta charset="ISO-8859-1">     <!--  ISO-8859-1 is an extension to ASCII, with added international characters.  -->
+    <title>Login Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link th:href="@{/css/toastr.css}" rel="stylesheet" />
+</head>
+<body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-6 offset-md-3">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Login Form</h3>
+                </div>
+                <div class="card-body">
+                    <form
+                            id="loginForm"
+                            class="form-horizontal"
+                            autocomplete="off"
+                    >
+                        <div class="mb-3">
+                            <label for="email" class="control-label">Email *</label>
+                            <input type="email"
+                                   id="email"
+                                   name="email"
+                                   class="form-control"
+                                   placeholder="Email"
+                            />
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="password" class="control-label">Password *</label>
+                            <input type="password"
+                                   id="password"
+                                   name="password"
+                                   class="form-control"
+                                   placeholder="Password"
+                            />
+                        </div>
+
+                        <div class="mb-3">
+                            <button type="submit" class="btn btn-primary">Login</button>
+                            <span> Not registered?
+                            <a th:href="@{/register}"> Register/SignUp Here</a>
+                        </span>
+                        </div>
+                    </form>
+                    <span id="check"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+<script th:src="@{/js/jquery-validation/login-validation.js}"></script>
+<script th:src="@{/js/toastr.js}"></script>
+<script>
+    $('#loginForm').submit(function (event) {
+            event.preventDefault();
+            var isValid = $("#loginForm").valid();       // For validate actor form by jQuery validations
+
+            var user = {
+                email: $('#email').val(),
+                password: $('#password').val(),
+            }
+            console.log(user);
+            if(isValid)
+            {
+                $.ajax({
+                      async: false,
+                      type: 'POST',
+                      url: 'api/auth/login',
+                      contentType: "application/json",
+                      dataType: "json",
+                      data: JSON.stringify(user),
+                      success: function(successResponse){
+                            console.log(successResponse);
+                           if(successResponse.message === "SUCCESS")
+                           {
+                                toastr.success("Logged-In successfully.");
+                                localStorage.setItem('jwtToken', successResponse.token);
+                                window.location.href = "/";
+                           }
+                      },
+                      error: (errorResponse) => {
+
+                      console.log(errorResponse);
+                      console.log(errorResponse.getResponseHeader);
+                          toastr.error(errorResponse.responseJSON.message);
+                      },
+                });
+
+            }
+
+
+})
+</script>
+</body>
+</html>
