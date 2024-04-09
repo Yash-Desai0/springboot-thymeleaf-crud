@@ -1,31 +1,37 @@
-
     $('#actors').chosen({ width: '461px' });
 
-    var actorOptions;           // For store actor Options and make it global for access letter.
+    var token = getCookie("Authorization"); // get the token from the cookie
 
-    var token = localStorage.getItem('jwtToken');
+    var actorOptions;           // For store actor Options and make it global for access letter.
 
     fetchActorOptions();        // when page load fetch actor options from the database
 
     fetchMovies();              // When page load show all movies.
 
     function fetchActorOptions() {
-        $.get("/api/v1/actors", function (data) {
-            $("#actors").empty();
-            actorOptions = data;                            // for not hit database.
-            data.forEach(function (actor) {
-                $("#actors").append(`<option value="${actor.id}">${actor.userName}</option>`);
-            });
-            $("#actors").trigger('chosen:updated');
-        });
+        $.ajax({
+                       method: 'GET',
+                       headers: {
+                           'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                       },
+                       url: '/api/v1/actors',
+                       success: function (data) {
+                                $("#actors").empty();
+                                actorOptions = data;                            // for not hit database.
+                                data.forEach(function (actor) {
+                                    $("#actors").append(`<option value="${actor.id}">${actor.userName}</option>`);
+                                });
+                                $("#actors").trigger('chosen:updated');
+                       }
+        })
     }
 
     function fetchMovies(){
         $.ajax({
                method: 'GET',
                headers: {
-                                                         'Authorization': 'Bearer ' + token // Include the token in the Authorization header
-                                                     },
+                   'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+               },
                url: '/api/v1/movies',
                success: function (response) {
                         movies = response.data;
@@ -99,8 +105,8 @@
                type: movie.id ? 'PUT' : 'POST',
                url: url,
                headers: {
-                                                         'Authorization': 'Bearer ' + token // Include the token in the Authorization header
-                                                     },
+                    'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+               },
                contentType: "application/json",
                dataType: "json",
                data: JSON.stringify(movie),
@@ -127,8 +133,8 @@
                 async: false,
                 type: "GET",
                 headers: {
-                                                          'Authorization': 'Bearer ' + token // Include the token in the Authorization header
-                                                      },
+                       'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                },
                 contentType: "application/json",
                 dataType: "json",
                 url: "/api/v1/movies/" + id,
@@ -160,8 +166,8 @@
                     async: false,
                     type: "DELETE",
                     headers: {
-                                                              'Authorization': 'Bearer ' + token // Include the token in the Authorization header
-                                                          },
+                        'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                    },
                     contentType: "application/json",
                     dataType: "json",
                     url: "/api/v1/movies/" + id,
@@ -172,14 +178,36 @@
                         }
                     },
                     error: (errorResponse) => {
-                        alert(errorResponse.responseText);
+                            toastr.error(errorResponse.responseText);
                     },
                 })
         }
     }
 
-
     // Clear the token from localStorage on logout
-            $('#logoutButton').click(function() {
-                localStorage.removeItem('jwtToken');
-            });
+    if(token != null)
+    {
+        $('#logoutForm').click(function() {
+                document.cookie = 'Authorization' + '=; expires=Thu, 01-Jan-70 00:00:01 GMT;';
+        });
+    }
+    else
+    {
+        document.getElementById("logoutForm").style.display = "none";
+    }
+
+    function getCookie(cname) {
+          let name = cname + "=";
+          let decodedCookie = decodeURIComponent(document.cookie);
+          let ca = decodedCookie.split(';');
+          for(let i = 0; i < ca.length; i++) {
+            let c = ca[i];
+            while (c.charAt(0) == ' ') {
+              c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+            }
+          }
+          return "";
+    }

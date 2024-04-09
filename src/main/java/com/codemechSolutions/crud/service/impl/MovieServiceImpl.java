@@ -36,7 +36,6 @@ public class MovieServiceImpl implements MovieService {
         this.actorRepository = actorRepository;
     }
 
-
     @Override
     public ResponseEntity<Movie> getMovieById(Long id) throws ActorMoviePortalException {
         try {

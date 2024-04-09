@@ -6,7 +6,7 @@ import com.codemechSolutions.crud.request.AuthRequest;
 import com.codemechSolutions.crud.request.UserRequest;
 import com.codemechSolutions.crud.response.AuthenticationResponse;
 import com.codemechSolutions.crud.service.AuthService;
-import com.codemechSolutions.crud.service.impl.AuthServiceImpl;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,12 +34,12 @@ public class AuthController {
         if(userRepository.existsByEmail(userRequest.getEmail())){
             return new ResponseEntity<>("Email is already taken!", HttpStatus.BAD_REQUEST);
         }
-
         return new ResponseEntity<AuthenticationResponse>(authService.register(userRequest), HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> loginUserHandler(@Valid @RequestBody AuthRequest authRequest) {
-        return new ResponseEntity<AuthenticationResponse>(authService.login(authRequest), HttpStatus.OK);
+    public ResponseEntity<AuthenticationResponse> loginUserHandler(@Valid @RequestBody AuthRequest authRequest, HttpServletResponse response) {
+
+        return new ResponseEntity<>(authService.login(authRequest, response), HttpStatus.OK);
     }
 }

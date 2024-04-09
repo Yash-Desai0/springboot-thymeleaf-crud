@@ -9,47 +9,23 @@ public interface APIConstant {
     String LOGIN = "/login";
 
 
-
     /*Api base urls*/
     String BASE_URL = "/api/v1";
+
 
     /*Actor base urls*/
     String ACTOR_URL = BASE_URL+"/actors";
     String ACTOR_ID = "/{id}";
+
 
     /*Movie base urls*/
     String MOVIE_URL = BASE_URL+"/movies";
     String MOVIE_ID = "/{id}";
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     /*  LOGGER   */
     String CLS_MET_ERROR = "class = {} method={} errorMessage={}";
+
 
     /*  LOGGER METHOD FOR ACTOR */
     String MET_GET_ACTOR_BY_ID = "getActorById";
@@ -57,6 +33,7 @@ public interface APIConstant {
     String MET_DELETE_ACTOR_BY_ID = "deleteActorById";
     String MET_GET_ALL_ACTORS = "getAllActors";
     String MET_SAVE_ACTOR = "saveActor";
+
 
     /*  LOGGER METHOD FOR MOVIE */
     String MET_GET_MOVIE_BY_ID = "getMovieById";

@@ -21,6 +21,7 @@
                             id="loginForm"
                             class="form-horizontal"
                             autocomplete="off"
+                            method="post"
                     >
                         <div class="mb-3">
                             <label for="email" class="control-label">Email *</label>
@@ -82,24 +83,21 @@
                       success: function(successResponse){
                             console.log(successResponse);
                            if(successResponse.message === "SUCCESS")
-                           {
+                            {
                                 toastr.success("Logged-In successfully.");
-                                localStorage.setItem('jwtToken', successResponse.token);
-                                window.location.href = "/";
+                                window.location.reload();
+                           }
+                           else
+                           {
+                                toastr.error("Bad Credentials!");
                            }
                       },
                       error: (errorResponse) => {
-
-                      console.log(errorResponse);
-                      console.log(errorResponse.getResponseHeader);
                           toastr.error(errorResponse.responseJSON.message);
                       },
                 });
-
             }
-
-
-})
+    })
 </script>
 </body>
 </html>

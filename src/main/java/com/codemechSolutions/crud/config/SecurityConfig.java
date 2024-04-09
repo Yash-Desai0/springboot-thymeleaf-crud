@@ -1,25 +1,17 @@
 package com.codemechSolutions.crud.config;
 
 import com.codemechSolutions.crud.filter.JwtAuthenticationFilter;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-
-import java.util.Arrays;
-import java.util.Collections;
 
 @Configuration
 @EnableWebSecurity
@@ -34,19 +26,21 @@ public class SecurityConfig {
     public SecurityFilterChain webFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+
                 .exceptionHandling(e->e.authenticationEntryPoint(jwtAuthenticationEntryPoint))
-//                .authorizeHttpRequests(authorize->authorize.requestMatchers("/auth/register","/auth/login").permitAll())
-                .authorizeHttpRequests((authorize)->{
-                    authorize.requestMatchers("/api/auth/**").permitAll();
-                    authorize.requestMatchers("/api/**").authenticated().anyRequest().permitAll();
-                })
+
+                .authorizeHttpRequests(authorize->
+                    authorize.requestMatchers("/api/auth/**","/css/**","/login","/js/**","/register","/","/index","/actors","movies").permitAll()
+                            .requestMatchers(HttpMethod.GET,"/api/**").hasAnyAuthority("ROLE_USER","ROLE_ADMIN")
+                            .requestMatchers(HttpMethod.POST,"/api/**").hasAuthority("ROLE_ADMIN")
+                            .requestMatchers(HttpMethod.PUT,"/api/**").hasAuthority("ROLE_ADMIN")
+                            .requestMatchers(HttpMethod.DELETE,"/api/**").hasAuthority("ROLE_ADMIN") )
+
                 .authenticationProvider(authenticationProvider)
+
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-                /*.formLogin("/   login").permitAll(); // Specify custom login page and allow access to i*/
-                /*.httpBasic(Customizer.withDefaults())
-                .formLogin(Customizer.withDefaults());*/
         return http.build();
     }
-
 }

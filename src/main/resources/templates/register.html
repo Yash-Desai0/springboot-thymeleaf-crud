@@ -49,7 +49,7 @@
                     </div>
 
                     <div class="form-group mb-3">
-                        <button class="btn btn-primary" type="submit">Register</button>
+                        <button  class="btn btn-primary" type="submit">Register</button>
                         <span>Already registered? <a href="/" th:href="@{/login}">Login here</a></span>
                     </div>
                 </form>
@@ -57,43 +57,51 @@
         </div>
     </div>
 </div>
+<span id="error"></span>
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
 <script th:src="@{/js/jquery-validation/register-validation.js}"></script>
 <script th:src="@{/js/toastr.js}"></script>
 <script>
-    $('#registerForm').submit(function (event) {
-            event.preventDefault();
-            var isValid = $("#registerForm").valid();       // For validate actor form by jQuery validations
 
-            var user = {
-                name: $('#name').val(),
-                email: $('#email').val(),
-                password: $('#password').val(),
-            }
-            console.log(user);
-            if(isValid)
-            {
-                $.ajax({
-                      async: false,
-                      type: 'POST',
-                      url: 'api/auth/register',
-                      contentType: "application/json",
-                      dataType: "json",
-                      data: JSON.stringify(user),
-                      success: ({resultStatus}) => {
-                          if (resultStatus.status === "SUCCESS") {
-                              toastr.success("Registered successfully.");
-                              window.location.href = "/login";
+
+        $('#registerForm').submit(function (event) {
+                event.preventDefault();
+                event.stopPropagation();
+
+                var isValid = $("#registerForm").valid();       // For validate actor form by jQuery validations
+
+                var user = {
+                    name: $('#name').val(),
+                    email: $('#email').val(),
+                    password: $('#password').val(),
+                }
+                console.log(user);
+                if(isValid)
+                {
+                    $.ajax({
+                          async: false,
+                          type: 'POST',
+                          url: 'api/auth/register',
+                          contentType: "application/json",
+                          dataType: "json",
+                          data: JSON.stringify(user),
+                          success: function (successResponse) {
+                                if(successResponse.message === "SUCCESS")
+                                {
+                                    toastr.success("Registered successfully.");
+                                    window.location.href = "/login";
+                                }
+                          },
+                          error: function (errorResponse) {
+                              alert(errorResponse.responseText);
+                              toastr.error(errorResponse.responseText);
                           }
-                      },
-                      error: (errorResponse) => {
-                          toastr.error(errorResponse.responseJSON.message);
-                      },
-                });
-            }
-        })
+                    });
+                }
+            })
 
 </script>
 </body>

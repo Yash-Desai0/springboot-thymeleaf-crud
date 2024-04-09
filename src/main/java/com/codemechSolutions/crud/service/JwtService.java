@@ -16,7 +16,6 @@ public interface JwtService {
     boolean isTokenValid(String token, UserDetails userDetails) throws ActorMoviePortalException;
     boolean isTokenExpired(String token);
     Date extractExpiration(String token);
-
     <T> T extractClaim(String token, Function<Claims, T> claimsResolver);
     Claims extractAllClaims(String token);
     Key getSignInKey();

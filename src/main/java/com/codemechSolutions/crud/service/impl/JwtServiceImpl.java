@@ -66,6 +66,7 @@ public class JwtServiceImpl implements JwtService {
         return extractExpiration(token).before(new Date());
     }
 
+
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }
