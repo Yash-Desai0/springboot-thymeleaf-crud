@@ -12,7 +12,7 @@
         $.ajax({
                        method: 'GET',
                        headers: {
-                           'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                           'Authorization': 'Bearer ' + token                   // Include the token in the Authorization header
                        },
                        url: '/api/v1/actors',
                        success: function (data) {
@@ -30,7 +30,7 @@
         $.ajax({
                method: 'GET',
                headers: {
-                   'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                   'Authorization': 'Bearer ' + token                           // Include the token in the Authorization header
                },
                url: '/api/v1/movies',
                success: function (response) {
@@ -40,7 +40,7 @@
         })
     }
 
-    var movies;                                             // For render table view
+    var movies;                                                                 // For render table view
 
     // Movie table view
     function populateMoviesAtDom(movies = []) {

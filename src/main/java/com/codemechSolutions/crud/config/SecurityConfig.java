@@ -30,11 +30,12 @@ public class SecurityConfig {
                 .exceptionHandling(e->e.authenticationEntryPoint(jwtAuthenticationEntryPoint))
 
                 .authorizeHttpRequests(authorize->
-                    authorize.requestMatchers("/api/auth/**","/css/**","/login","/js/**","/register","/","/index","/actors","movies").permitAll()
+                    authorize.requestMatchers("/css/**","/js/**","/image/**","/login","/register","/","/index","/actors","movies","/api/register","/api/login").permitAll()
                             .requestMatchers(HttpMethod.GET,"/api/**").hasAnyAuthority("ROLE_USER","ROLE_ADMIN")
                             .requestMatchers(HttpMethod.POST,"/api/**").hasAuthority("ROLE_ADMIN")
                             .requestMatchers(HttpMethod.PUT,"/api/**").hasAuthority("ROLE_ADMIN")
-                            .requestMatchers(HttpMethod.DELETE,"/api/**").hasAuthority("ROLE_ADMIN") )
+                            .requestMatchers(HttpMethod.DELETE,"/api/**").hasAuthority("ROLE_ADMIN")
+                )
 
                 .authenticationProvider(authenticationProvider)
 

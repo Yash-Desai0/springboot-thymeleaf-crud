@@ -30,6 +30,7 @@
 
        actors.forEach(({id, userName, gender, dateOfBirth, phoneNumber, biography, image}) => {
        const imageData = `data:image/png;base64,${image}`;
+       const imageSrc = imageData === "data:image/png;base64,null" ? "image/default.png" : imageData;
        $("#actor-data").append(`
        <tr>
            <td >${id}</td>
@@ -38,7 +39,7 @@
            <td >${dateOfBirth}</td>
            <td >${phoneNumber}</td>
            <td >${biography}</td>
-           <td><img src="${imageData}" width="50" height="50"></td>    // src="http://localhost:8086/api/v1/actors/${id}/getImage" asking the 401.
+           <td><img src="${imageSrc}" width="50" height="50"></td>      // src="http://localhost:8086/api/v1/actors/${id}/getImage" asking the 401.
            <td>
                <button data-toggle="modal" data-target="#myModal" data-id="${id}">Edit</button>
                <button onclick="deleteActorById(${id})">Delete</button>
@@ -49,10 +50,7 @@
 
     $('#myModal').on('hidden.bs.modal', function () {           // when model hidden reset form
             $(this).find('form')[0].reset();
-            document.getElementById("phoneNumber-error").style.display = "none";
-            document.getElementById("dateOfBirth-error").style.display = "none";
-            document.getElementById("gender-error").style.display = "none";
-            document.getElementById("userName-error").style.display = "none";
+            $('#actorForm').valid();
     });
 
     $('#myModal').on('show.bs.modal', function (event) {       // when modal open check for id
@@ -61,6 +59,11 @@
 
         if (id) {
             populateDataToActorForm(id);
+            $('#imageSelector').show();                         // when user open model for edit
+        }
+        else{
+            $('#imageSelector').hide();
+            document.getElementById("form-title").innerHTML = "Add Actor";
         }
     });
 
@@ -80,7 +83,7 @@
         }
         if(isValid) {
              if(actor.id) {
-                updateActorImage(actor.id);
+                updateActorImage(actor.id);         // if id is there then send for update
              }
              else {
                 saveActor();
@@ -108,11 +111,7 @@
                   }
               },
               error: (errorResponse) => {
-                console.log(errorResponse);
-                    if(errorResponse.status == 401)
-                        toastr.error(errorResponse.responseText);
-                    else
-                        toastr.error(errorResponse.responseText);
+                toastr.error(errorResponse.responseText);
               },
         });
     }
@@ -126,7 +125,7 @@
               async: false,
               type: 'PUT',
               headers: {
-                    'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                    'Authorization': 'Bearer ' + token              // Include the token in the Authorization header
               },
               url: "/api/v1/actors/" + id +'/updateImage',
               data: formData,
@@ -137,15 +136,11 @@
                       if(resultStatus != null){
                             console.log("hello ");
                             toastr.success("Actor image updated successfully.");
-                            updateActor(id);  // call the further update.
+                            updateActor(id);                        // call the further update.
                         }
               },
               error: (errorResponse) => {
-                   console.log(errorResponse);
-                   if(errorResponse.status == 401)
-                       toastr.error(errorResponse.responseText);
-                   else
-                       toastr.error(errorResponse.responseText);
+                   toastr.error(errorResponse.responseText);
               },
         });
     }
@@ -170,9 +165,6 @@
                           }
                       },
                       error: (errorResponse) => {
-                      if(errorResponse.status == 401)
-                          toastr.error(errorResponse.responseText);
-                      else
                           toastr.error(errorResponse.responseText);
                       },
                 });
@@ -226,10 +218,7 @@
                             }
                         },
                         error: (errorResponse) => {
-                            if(errorResponse.status == 401)
-                                toastr.error(errorResponse.responseText);
-                            else
-                                toastr.error(errorResponse.responseText);
+                             toastr.error(errorResponse.responseText);
                         },
                 })
             }
@@ -240,6 +229,7 @@
         {
             $('#logoutForm').click(function() {
                     document.cookie = 'Authorization' + '=; expires=Thu, 01-Jan-70 00:00:01 GMT;';
+                    toastr.success("Logout Successfully..");
             });
         }
         else

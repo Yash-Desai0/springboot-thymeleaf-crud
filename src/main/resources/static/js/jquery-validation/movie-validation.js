@@ -1,7 +1,9 @@
 
-    $.validator.addMethod("regex", function(value, element){
-        return this.optional(element) || value == value.match(/^[a-zA-Z0-9)\s]+$/);
-    }, "Special chars not allowed!!");
+    $.validator.addMethod("regex",function(value, element, regexp) {
+             var check = false;
+             var re = new RegExp(regexp);
+             return this.optional(element) || re.test(value);
+         },);
 
       $.validator.addMethod("maxAge", function(value, element, max) {
             var today = new Date();
@@ -13,7 +15,6 @@
             }
 
       },);
-
 
      $.validator.addMethod("future", function(value, element) {
            var futureDate = new Date('2026-12-31');
@@ -36,14 +37,13 @@
 
     },);
 
-
 $(document).ready(function ()
 {
      $("#movieForm").validate({
        rules: {
          title: {
            required: true,
-           regex:true
+           regex: "^[a-zA-Z0-9\s ]+$"
          },
          releaseDate: {
            required: true,
@@ -60,7 +60,8 @@ $(document).ready(function ()
        },
        messages: {
          title: {
-            required: "Please enter movie title"
+            required: "Please enter movie title",
+            regex: "No special Characters allowed here"
          },
          releaseDate:{
             required: "Please select release date",
@@ -77,7 +78,7 @@ $(document).ready(function ()
             required: "Please select gender"
          },
        },
-       errorPlacement: function (error, element) {
+       /*errorPlacement: function (error, element) {
          if (element.attr("name") == "actors") {
            error.addClass("invalid-feedback");
            error.insertAfter("#actors-error");
@@ -85,13 +86,15 @@ $(document).ready(function ()
            error.addClass("invalid-feedback");
            error.insertAfter(element);
          }
-       },
-       highlight: function (element, errorClass, validClass) {
+       },*/
+       /*highlight: function (element, errorClass, validClass) {
          $(element).addClass("is-invalid").removeClass("is-valid");
        },
        unhighlight: function (element, errorClass, validClass) {
          $(element).removeClass("is-invalid").addClass("is-valid");
-       },
+       },*/
+       submitHandler: function(form) {               // if you don't want to highlight border then remove comment.
+                form.submit();
+            }
      });
-         console.log("jquery validations");
 });

@@ -19,7 +19,7 @@ public interface ActorService {
 
     ResponseEntity<List<Actor>> getAllActors() throws  ActorMoviePortalException;
 
-    ResponseEntity<ResultStatusResponse> saveActor(ActorRequest actorRequest) throws IOException;
+    ResponseEntity<ResultStatusResponse> saveActor(ActorRequest actorRequest) throws ActorMoviePortalException;
 
     ResponseEntity<ResultStatusResponse> updateActorImage(Long actorId, MultipartFile profilePicture) throws ActorMoviePortalException;
 

@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <!-- BEGIN: Head-->
 <head>
     <meta charset="ISO-8859-1">     <!--  ISO-8859-1 is an extension to ASCII, with added international characters.  -->
     <title>Actor List</title>
+    <link rel="shortcut icon" href="#" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link th:href="@{/css/style.css}" rel="stylesheet" />
     <link th:href="@{/css/toastr.css}" rel="stylesheet" />
@@ -20,7 +21,7 @@
             <div class="card">
                 <div class="card-header">Actor List
                     <form id="logoutForm" action="/logout" method="post" style="display: inline;">
-                        <button type="submit" class="btn btn-danger btn-sm float-right">Logout</button>
+                        <button type="submit" class="btn btn-primary btn-sm float-right">Logout</button>
                     </form>
                 </div>
                 <div class="card-body">
@@ -85,14 +86,13 @@
             <!-- Modal header -->
             <div class="modal-header">
                 <h4 id="form-title" class="modal-title">Add Actor</h4>
-                <!--<span style="color:red" th:text="${error}"></span>-->
                 <button type="button" class="close" data-dismiss="modal">&times;</button>
             </div>
 
             <!-- Modal body -->
             <div class="modal-body">
                 <form id="actorForm" autocomplete="off" enctype="multipart/form-data">
-                    <input type="hidden" id="id" name="id"/>
+                    <input type="hidden" id="id" name="id" />
 
                     <div class="form-group">
                         <label class="control-label" for="userName">Username</label>
@@ -123,13 +123,13 @@
                     </div>
 
                     <div class="form-group">
-                        <label class="control-label" for="biography">biography</label>
+                        <label class="control-label" for="biography">Biography</label>
                         <textarea class="form-control" id="biography" name="biography" rows="3" placeholder="I am ..." ></textarea>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group" id="imageSelector">
                         <label class="control-label" for="image">Profile picture</label>
-                        <input class="form-control-file" id="image" name="image" accept="image/png,image/jpeg" type="file" placeholder="Choose an image" >
+                        <input class="form-control-file" id="image" name="image"  type="file" placeholder="Choose an image" >
                     </div>
 
                     <!-- Modal footer -->

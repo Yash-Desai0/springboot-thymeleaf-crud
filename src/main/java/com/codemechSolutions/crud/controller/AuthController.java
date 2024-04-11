@@ -1,5 +1,6 @@
 package com.codemechSolutions.crud.controller;
 
+import com.codemechSolutions.crud.domain.ResultStatusResponse;
 import com.codemechSolutions.crud.exception.ActorMoviePortalException;
 import com.codemechSolutions.crud.repository.UserRepository;
 import com.codemechSolutions.crud.request.AuthRequest;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.validation.Valid;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 public class AuthController {
 
     @Autowired
@@ -29,17 +30,13 @@ public class AuthController {
     private UserRepository userRepository;
 
     @PostMapping("/register")
-    public ResponseEntity<?> createUserHandler(@Valid @RequestBody UserRequest userRequest) throws UsernameNotFoundException, ActorMoviePortalException {
-
-        if(userRepository.existsByEmail(userRequest.getEmail())){
-            return new ResponseEntity<>("Email is already taken!", HttpStatus.BAD_REQUEST);
-        }
-        return new ResponseEntity<AuthenticationResponse>(authService.register(userRequest), HttpStatus.CREATED);
+    public ResponseEntity<ResultStatusResponse> createUserHandler(@Valid @RequestBody UserRequest userRequest) throws ActorMoviePortalException {
+        return authService.register(userRequest);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> loginUserHandler(@Valid @RequestBody AuthRequest authRequest, HttpServletResponse response) {
+    public ResponseEntity<AuthenticationResponse> loginUserHandler(@Valid @RequestBody AuthRequest authRequest, HttpServletResponse response) throws ActorMoviePortalException {
 
-        return new ResponseEntity<>(authService.login(authRequest, response), HttpStatus.OK);
+        return authService.login(authRequest, response);
     }
 }

@@ -3,10 +3,12 @@
       xmlns:th="http://www.thymeleaf.org"
 >
 <head>
+    <link rel="shortcut icon" href="#" />
     <meta charset="ISO-8859-1">     <!--  ISO-8859-1 is an extension to ASCII, with added international characters.  -->
     <title>Login Page</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link th:href="@{/css/toastr.css}" rel="stylesheet" />
+    <style> .error { color: red; } </style>
 </head>
 <body>
 <div class="container">
@@ -21,7 +23,6 @@
                             id="loginForm"
                             class="form-horizontal"
                             autocomplete="off"
-                            method="post"
                     >
                         <div class="mb-3">
                             <label for="email" class="control-label">Email *</label>
@@ -44,13 +45,12 @@
                         </div>
 
                         <div class="mb-3">
-                            <button type="submit" class="btn btn-primary">Login</button>
+                            <button id="loginButton" class="btn btn-primary">Login</button>
                             <span> Not registered?
                             <a th:href="@{/register}"> Register/SignUp Here</a>
                         </span>
                         </div>
                     </form>
-                    <span id="check"></span>
                 </div>
             </div>
         </div>
@@ -61,43 +61,36 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
 <script th:src="@{/js/jquery-validation/login-validation.js}"></script>
 <script th:src="@{/js/toastr.js}"></script>
-<script>
-    $('#loginForm').submit(function (event) {
-            event.preventDefault();
-            var isValid = $("#loginForm").valid();       // For validate actor form by jQuery validations
+<script th:inline="javascript">
+    $(document).ready(function() {
+            $('#loginButton').click(function(event) {
+                    event.preventDefault();
 
-            var user = {
-                email: $('#email').val(),
-                password: $('#password').val(),
-            }
-            console.log(user);
-            if(isValid)
-            {
-                $.ajax({
-                      async: false,
-                      type: 'POST',
-                      url: 'api/auth/login',
-                      contentType: "application/json",
-                      dataType: "json",
-                      data: JSON.stringify(user),
-                      success: function(successResponse){
-                            console.log(successResponse);
-                           if(successResponse.message === "SUCCESS")
-                            {
-                                toastr.success("Logged-In successfully.");
-                                window.location.reload();
-                           }
-                           else
-                           {
-                                toastr.error("Bad Credentials!");
-                           }
-                      },
-                      error: (errorResponse) => {
-                          toastr.error(errorResponse.responseJSON.message);
-                      },
-                });
-            }
-    })
+                    var formData = {
+                        email: $('#email').val(),
+                        password: $('#password').val()
+                    };
+
+                var isValid = $("#loginForm").valid();
+
+                if(isValid)
+                {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/api/login',
+                        contentType: 'application/json',
+                        data: JSON.stringify(formData),
+                        success: function(response) {
+                            toastr.success("User Logged-In successfully.");
+                            window.location.href="/actors";
+                        },
+                        error: function(response) {
+                                toastr.error(response.responseJSON);
+                        },
+                    });
+                }
+            });
+        });
 </script>
 </body>
 </html>

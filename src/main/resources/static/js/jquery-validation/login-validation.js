@@ -1,3 +1,9 @@
+$.validator.addMethod("regex",function(value, element, regexp) {
+         var check = false;
+         var re = new RegExp(regexp);
+         return this.optional(element) || re.test(value);
+},);
+
 $.validator.addMethod("checklower", function(value) {
   return /[a-z]/.test(value);
 });
@@ -25,6 +31,7 @@ $(document).ready(function() {
            'email': {
             required:true,
             email:true,
+            regex:"^[a-zA-Z0-9+_@.]+@[a-zA-Z0-9+_@.]+$"
           },
       },
 
@@ -39,22 +46,14 @@ $(document).ready(function() {
 
           email: {
           required: "Enter your email!",
-          email: "Please Enter a valid email address"
+          email: "Please Enter a valid email address",
+          email: "Invalid email format!"
           },
       },
 
-      errorPlacement: function (error, element) {
-            error.addClass("invalid-feedback");
-            error.insertAfter(element);
-      },
-
-      highlight: function (element) {
-          $(element).closest('.control-group').removeClass('success').addClass('error');
-      },
-
-      submitHandler: function(form) {
-          form.submit();
-      }
+       submitHandler: function(form) {
+           form.submit();
+       }
     });
   })
 

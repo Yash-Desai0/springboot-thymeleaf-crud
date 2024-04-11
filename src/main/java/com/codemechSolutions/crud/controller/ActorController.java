@@ -26,7 +26,7 @@ public class ActorController {
     }
 
     @PostMapping
-    public ResponseEntity<ResultStatusResponse> saveActor(@Valid @RequestBody ActorRequest actorRequest) throws IOException {
+    public ResponseEntity<ResultStatusResponse> saveActor(@Valid @RequestBody ActorRequest actorRequest) throws ActorMoviePortalException {
         return actorService.saveActor(actorRequest);
     }
 
@@ -37,7 +37,6 @@ public class ActorController {
 
     @PutMapping(APIConstant.ACTOR_ID)
     public ResponseEntity<ResultStatusResponse> updateActor(@PathVariable Long id, @Valid @RequestBody ActorRequest actorRequest) throws ActorMoviePortalException {
-        System.out.println("update called");
         return actorService.updateActor(id, actorRequest);
     }
 
