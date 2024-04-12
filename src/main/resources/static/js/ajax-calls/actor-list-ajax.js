@@ -11,41 +11,49 @@
                     'Authorization': 'Bearer ' + token          // Include the token in the Authorization header
             },
             url: '/api/v1/actors',
-            success: function (response) {
-                     actors = response.data;
-                     populateActorsAtDom(response)      // populate the Actor to dom.
+            success: function (data) {
+                $("#userTable").dataTable({
+                    "retrieve":true,
+                    "destroy":true,
+//                    ajax: '/api/v1/actors/page/1',
+//                    processing:true,
+//                    serverSide: true,
+//                    responsive: true,
+//                    ajax: {
+//                        url: '/api/v1/actors',
+//                        data: function (d) {
+//                            d.custom = $('#userTable').data('test');
+//                        },
+//                    },
+                   "data":data,
+                    "columns":[
+                        {data:'userName'},
+                        {data:'gender'},
+                        {data:'dateOfBirth'},
+                        {data:'phoneNumber'},
+                        {data:'biography'},
+                        {data:'image',
+                         render: function (data) {
+                               if(data){
+                                    return '<img src="data:image/png;base64,' + data + '" width="50" height="50">';
+                               }else{
+                                    return'<img src="image/default.png" width="50" height="50">';
+                               }}
+                        },
+                        {data:null,
+                             render: function (data) {
+                                   return '<button data-toggle="modal" data-target="#myModal" data-id="'+ data.id +'">Edit</button>' + ' '
+                                   +'<button onclick="deleteActorById('+ data.id+')">Delete</button>';
+                             }
+                        }
+                    ]
+                });
             },
             error: (errorResponse) =>{
                 document.getElementById("logoutForm").style.display = "none";
                 toastr.error(errorResponse.responseText);
             },
         })
-    }
-
-    // Actor table view
-    function populateActorsAtDom(actors = []) {
-       $("#actor-data").empty();
-       const actorElementCountTag = $("#actor-count");
-       actorElementCountTag.text(actors.length ? 'Total Actors: ' + actors.length : "No Movies Yet!");
-
-       actors.forEach(({id, userName, gender, dateOfBirth, phoneNumber, biography, image}) => {
-       const imageData = `data:image/png;base64,${image}`;
-       const imageSrc = imageData === "data:image/png;base64,null" ? "image/default.png" : imageData;
-       $("#actor-data").append(`
-       <tr>
-           <td >${id}</td>
-           <td >${userName}</td>
-           <td >${gender}</td>
-           <td >${dateOfBirth}</td>
-           <td >${phoneNumber}</td>
-           <td >${biography}</td>
-           <td><img src="${imageSrc}" width="50" height="50"></td>      // src="http://localhost:8086/api/v1/actors/${id}/getImage" asking the 401.
-           <td>
-               <button data-toggle="modal" data-target="#myModal" data-id="${id}">Edit</button>
-               <button onclick="deleteActorById(${id})">Delete</button>
-           </td>
-       </tr>`);
-       });
     }
 
     $('#myModal').on('hidden.bs.modal', function () {           // when model hidden reset form
@@ -134,7 +142,6 @@
               contentType:false,
               success: function (resultStatus) {
                       if(resultStatus != null){
-                            console.log("hello ");
                             toastr.success("Actor image updated successfully.");
                             updateActor(id);                        // call the further update.
                         }
@@ -147,11 +154,12 @@
 
     function updateActor(id)
             {
+                console.log("updating actor after image");
                 $.ajax({
                       async: false,
                       type: 'PUT',
                       headers: {
-                            'Authorization': 'Bearer ' + token // Include the token in the Authorization header
+                            'Authorization': 'Bearer ' + token      // Include the token in the Authorization header
                       },
                       url: '/api/v1/actors/' + id,
                       contentType: "application/json",
@@ -215,6 +223,9 @@
                             if (resultStatus.status === "SUCCESS") {
                                 toastr.success("Actor deleted successfully.");
                                 fetchActors();
+                                setTimeout(function(){
+                                   window.location.reload();
+                                }, 1000);
                             }
                         },
                         error: (errorResponse) => {

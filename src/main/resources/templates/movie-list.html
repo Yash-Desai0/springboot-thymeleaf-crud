@@ -7,6 +7,7 @@
     <title>Movie List</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css" />
+    <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link th:href="@{/css/style.css}" rel="stylesheet" />
     <link th:href="@{/css/toastr.css}" rel="stylesheet" />
 </head>
@@ -37,7 +38,7 @@
                             <table id="userTable" class="table table-bordered">
                                 <thead>
                                 <tr>
-                                    <th>Movie ID</th>
+                                    <!--<th>Movie ID</th>-->
                                     <th>Movie Title</th>
                                     <th>Release Date</th>
                                     <th>Genre</th>
@@ -113,7 +114,7 @@
 
                     <div class="form-group">
                         <label class="control-label" for="actors">Actors</label>
-                        <select class="form-control chosen-select" id="actors" name="actors" multiple>
+                        <select class="form-control chosen-select   " id="actors" name="actors" multiple>
                             <!-- Options will be populated dynamically via JavaScript -->
 
                         </select>
@@ -141,6 +142,10 @@
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/additional-methods.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
+
+<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
+
 <script th:src="@{/js/jquery-validation/movie-validation.js}"></script>
 <script th:src="@{/js/toastr.js}"></script>
 <script th:src="@{/js/ajax-calls/movie-list-ajax.js}">

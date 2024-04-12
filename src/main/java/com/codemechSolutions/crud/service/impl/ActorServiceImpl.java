@@ -10,6 +10,9 @@ import com.codemechSolutions.crud.service.ActorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,14 @@ import static com.codemechSolutions.crud.constant.APIConstant.MET_DELETE_ACTOR_B
 
 @Service
 public class ActorServiceImpl implements ActorService {
+
+    @Override
+    public ResponseEntity<List<Actor>> getPageOfActors(int pageNumber) {
+        Pageable pageable = PageRequest.of(pageNumber,10);
+        Page page = actorRepository.findAll(pageable);
+        List<Actor> actors = page.getContent();
+        return new ResponseEntity<>(actors,HttpStatus.OK);
+    }
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ActorService.class);
 
@@ -54,12 +65,6 @@ public class ActorServiceImpl implements ActorService {
     @Override
     public ResponseEntity<ResultStatusResponse> saveActor(ActorRequest actorRequest) throws ActorMoviePortalException {
         try {
-
-            if(getByUsername(actorRequest.getUserName()))
-            {
-                return new ResponseEntity<>(generateSuccessMessage("Actor name is already there!"),HttpStatus.BAD_REQUEST);
-            }
-
             Actor actor = new Actor();
             actor.setUserName(actorRequest.getUserName());
             actor.setGender(actorRequest.getGender());
@@ -98,12 +103,6 @@ public class ActorServiceImpl implements ActorService {
 
     public ResponseEntity<ResultStatusResponse> updateActor(Long actorId, ActorRequest actorRequest) throws ActorMoviePortalException{
         try {
-
-            if(getByUsername(actorRequest.getUserName()))
-            {
-                return new ResponseEntity<>(generateSuccessMessage("Actor name is already there!"),HttpStatus.BAD_REQUEST);
-            }
-
             Actor actor = getById(actorId);
             actor.setUserName(actorRequest.getUserName());
             actor.setGender(actorRequest.getGender());
@@ -135,12 +134,14 @@ public class ActorServiceImpl implements ActorService {
         }
     }
 
-    public Actor getById(Long id) throws ActorMoviePortalException {
-        return actorRepository.findById(id) .orElseThrow(() -> new ActorMoviePortalException("Actor not found by given id :: " + id, HttpStatus.BAD_REQUEST));
+    @Override
+    public Page<Actor> findByPagination(int pageNo, int size) {
+        Pageable pageable = PageRequest.of(pageNo-1, size);
+        return actorRepository.findAll(pageable);
     }
 
-    public Boolean getByUsername(String userName) {
-        return actorRepository.existsByUserName(userName);
+    public Actor getById(Long id) throws ActorMoviePortalException {
+        return actorRepository.findById(id) .orElseThrow(() -> new ActorMoviePortalException("Actor not found by given id :: " + id, HttpStatus.BAD_REQUEST));
     }
 
     private ResultStatusResponse generateSuccessMessage(String response) {

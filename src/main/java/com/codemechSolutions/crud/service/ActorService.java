@@ -6,6 +6,7 @@ import com.codemechSolutions.crud.entity.Actor;
 import com.codemechSolutions.crud.exception.ActorMoviePortalException;
 import com.codemechSolutions.crud.request.ActorRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +29,9 @@ public interface ActorService {
     ResponseEntity<ResultStatusResponse> deleteActorById(Long id) throws ActorMoviePortalException;
 
    /* void getActorImageById(Long actorId,HttpServletResponse response) throws ActorMoviePortalException;*/
-
     Actor getById(Long id) throws ActorMoviePortalException;
+
+    Page<Actor> findByPagination(int pageNo, int size);
+
+    ResponseEntity<List<Actor>> getPageOfActors(int pageNumber);
 }

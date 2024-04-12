@@ -12,6 +12,4 @@ public interface ActorRepository extends JpaRepository<Actor,Long> {
 
     List<Actor> findActorsByIdIn(Collection<Long> ids);
 
-    boolean existsByUserName(String userName);
-
 }

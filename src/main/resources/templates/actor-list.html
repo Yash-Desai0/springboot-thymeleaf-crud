@@ -7,6 +7,7 @@
     <title>Actor List</title>
     <link rel="shortcut icon" href="#" />
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" />
+    <link href="https://cdn.datatables.net/1.13.1/css/dataTables.bootstrap5.min.css" rel="stylesheet">
     <link th:href="@{/css/style.css}" rel="stylesheet" />
     <link th:href="@{/css/toastr.css}" rel="stylesheet" />
 </head>
@@ -40,7 +41,6 @@
                             <table id="userTable" class="table table-bordered">
                                 <thead>
                                     <tr>
-                                        <th>Actor ID</th>
                                         <th>Actor Name</th>
                                         <th>Gender</th>
                                         <th>Date Of Birth</th>
@@ -151,6 +151,10 @@
 <script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.5/dist/jquery.validate.js"></script>
 <script src="https://ajax.aspnetcdn.com/ajax/jquery.validate/1.11.0/additional-methods.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.1/js/dataTables.bootstrap5.min.js"></script>
+
 <script th:src="@{/js/jquery-validation/actor-validation.js}"></script>
 <script th:src="@{/js/toastr.js}"></script>
 <script th:src="@{/js/ajax-calls/actor-list-ajax.js}"></script>

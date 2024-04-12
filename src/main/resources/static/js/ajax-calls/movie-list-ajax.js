@@ -28,40 +28,42 @@
 
     function fetchMovies(){
         $.ajax({
-               method: 'GET',
-               headers: {
-                   'Authorization': 'Bearer ' + token                           // Include the token in the Authorization header
-               },
-               url: '/api/v1/movies',
-               success: function (response) {
-                        movies = response.data;
-                        populateMoviesAtDom(response)
-               }
+           method: 'GET',
+           headers: {
+               'Authorization': 'Bearer ' + token                           // Include the token in the Authorization header
+           },
+           url: '/api/v1/movies',
+           success: function (data) {
+                $("#userTable").dataTable({
+                    "retrieve":true,
+                    "destroy":true,
+                    "data": data,
+                    "columns":[
+                        {data:'title'},
+                        {data:'releaseDate'},
+                        {data:'genre'},
+                        {data:'actors',
+                         render: function (data) {
+                               if(data){
+                                    return data.map(actor => actor.userName).join(", ");
+                               }else{
+                                    return "No Actors";
+                               }}
+                        },
+                        {data:null,
+                             render: function (data) {
+                                   return '<button data-toggle="modal" data-target="#myModal" data-id="'+ data.id +'">Edit</button>' + ' ' +
+                                   '<button onclick="deleteMovieById('+ data.id+')">Delete</button>';
+                             }
+                        }
+                    ]
+                });
+           },
+           error: (errorResponse) =>{
+               document.getElementById("logoutForm").style.display = "none";
+               toastr.error(errorResponse.responseText);
+           },
         })
-    }
-
-    var movies;                                                                 // For render table view
-
-    // Movie table view
-    function populateMoviesAtDom(movies = []) {
-       $("#movie-data").empty();
-       const actorElementCountTag = $("#movie-count");
-       actorElementCountTag.text(movies.length ? 'Total Movies: ' + movies.length : "No Movies Yet!");
-
-       movies.forEach(({ id, title, releaseDate, genre, actors }) => {
-       $("#movie-data").append(`
-       <tr>
-           <td>${id}</td>
-           <td>${title}</td>
-           <td>${releaseDate}</td>
-           <td>${genre}</td>
-           <td>${actors.length > 0 ? actors.map(actor => actor.userName).join(", ") : "No Actors"}</td>
-           <td>
-               <button data-toggle="modal" data-target="#myModal" data-id="${id}">Edit</button>
-               <button onclick="deleteMovieById(${id})">Delete</button>
-           </td>
-       </tr>`);
-       });
     }
 
     $('#myModal').on('hidden.bs.modal', function () {
@@ -175,6 +177,9 @@
                         if (resultStatus.status === "SUCCESS") {
                             toastr.success("Actor deleted successfully.");
                             fetchMovies();
+                            setTimeout(function(){
+                               window.location.reload();
+                            }, 1000);
                         }
                     },
                     error: (errorResponse) => {
